@@ -15,6 +15,7 @@ class Daily_Input(db.Model):
 
     __tablename__ = "daily_inputs"
 
+    input_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     date = db.Column(db.DateTime, nullable=False)
     user_id = db.Column(db.String(30), db.ForeignKey('users.user_id'), nullable=False)
     sleep = db.Column(db.Integer, nullable=False)
