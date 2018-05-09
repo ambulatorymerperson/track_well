@@ -28,10 +28,10 @@ class Daily_Input(db.Model):
 
     input_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     date = db.Column(db.DateTime, nullable=False)
-    user_id = db.Column(db.String(30), db.ForeignKey('users.user_id'), nullable=False)
-    sleep = db.Column(db.Integer, nullable=False)
-    exercise = db.Column(db.Integer, nullable=False)
-    screen_time = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.String(30), db.ForeignKey('users.ID'), nullable=False)
+    sleep = db.Column(db.Float, nullable=False)
+    exercise = db.Column(db.Float, nullable=False)
+    screen_time = db.Column(db.Float, nullable=False)
     well_being_rating = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
@@ -44,14 +44,14 @@ class User(db.Model):
     __tablename__ = "users"
 
 
-    user_id = db.Column(db.String(30), primary_key=True, nullable=False)
+    ID = db.Column(db.String(30), primary_key=True, nullable=False)
     password = db.Column(db.String(15), nullable=False)
     name = db.Column(db.String(15), nullable=False)
     first_entry_at = db.Column(db.DateTime, nullable=False)
 
 
     def __repr__(self):
-        return "<User_id: %S Password: %s Name: %s Started tracking on:%s>\n" % (self.user_id, 
+        return "<User_id: %S Password: %s Name: %s Started tracking on:%s>\n" % (self.ID, 
             self.password, self.name, self.first_entry_at)
 
 
