@@ -48,7 +48,7 @@ def login():
 
     if User.query.filter(User.ID == email_input, User.password == pw_input).all() != []:
         user = User.query.filter(User.ID == email_input).one()
-        session['current_user'] = user
+        session['current_user'] = user.ID
         flash('You were successfully logged in')
         return redirect("/my_stats")
     else:
@@ -59,15 +59,22 @@ def login():
 def show_user_stats():
 
     current_user = session['current_user']
- #   current_user_id = current_user.email
- #   user_info = Daily_Input.query.filter_by(user_id=current_user_id).all()
+    user_stats = Daily_Input.query.filter_by(user_id=current_user).all()
+    user = User.query.filter(User.ID == current_user).one()
+    name = user.name
+    sleep = []
+    screentime = []
+    exercise = []
+    well_being_rating = []
 
-#      sleep = user_info.sleep
-#     user_info.screen_time = st 
-#     user_info.exercise = exercise
-#     user_info.well_being_rating = wbr 
+    for info in user_stats:
+        sleep += [info.sleep]
+        screentime += [info.screen_time]
+        exercise += [info.exercise]
+        well_being_rating += [info.well_being_rating]
+        
 
-    return render_template("my_stats.html", current_user=current_user)
+    return render_template("my_stats.html", sleep=sleep, screentime=screentime, exercise=exercise, well_being_rating=well_being_rating, name=name)
 
 @app.route("/logout")
 def logout():
