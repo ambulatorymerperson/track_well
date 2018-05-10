@@ -4,7 +4,9 @@ from jinja2 import StrictUndefined
 
 from flask import (Flask, render_template, redirect, request, flash,
                    session, copy_current_request_context)
-#from flask_debugtoolbar import DebugToolbarExtension
+
+
+from flask_debugtoolbar import DebugToolbarExtension
 
 from model import User, Daily_Input, connect_to_db, db
 
@@ -12,19 +14,68 @@ from model import User, Daily_Input, connect_to_db, db
 app = Flask(__name__)
 
 
-@app.route('/my_stats')
-def calculate_correlations():
-    """Show user relationship between their behaviors and sense of wellness."""
+app.secret_key = "ZYX"
+
+@app.route('/')
+def show_homepage():
+    """show home page"""
+
+    return render_template("homepage.html")
+
+
+
+
+@app.route("/register", methods=["POST"])
+def register_process():
+    """Registration Form."""
+
+    email_input = request.form['email_input']
+    pw_input = request.form['pw_input']
+
+    if User.query.filter_by(email = email_input).all() != []:
+        return redirect('/')       
+    else:
+        new_user = User(ID= ID, password=pw_input)
+        db.session.add(new_user)
+        db.session.commit() 
+
+    return redirect('/')
+
+@app.route("/login", methods=["POST"])
+def login():
+    email_input = request.form['email_input']
+    pw_input = request.form['pw_input']
+
+    if User.query.filter(User.ID == email_input, User.password == pw_input).all() != []:
+        user = User.query.filter(User.ID == email_input).one()
+        session['current_user'] = user
+        flash('You were successfully logged in')
+        return redirect("/my_stats")
+    else:
+        flash('Your e-mail or password was incorrect! Please try again or Register.')
+        return render_template("log_in.html")
+
+@app.route("/my_stats")
+def show_user_stats():
 
     current_user = session['current_user']
-    user_info = Daily_Input.query.filter_by(user_id=current_user).all()
+ #   current_user_id = current_user.email
+ #   user_info = Daily_Input.query.filter_by(user_id=current_user_id).all()
 
-    user_info.sleep = sleep
-    user_info.screen_time = st 
-    user_info.exercise = exercise
-    user_info.well_being_rating = wbr 
+#      sleep = user_info.sleep
+#     user_info.screen_time = st 
+#     user_info.exercise = exercise
+#     user_info.well_being_rating = wbr 
+
+    return render_template("my_stats.html", current_user=current_user)
+
+@app.route("/logout")
+def logout():
+    del session['current_user']
 
 
+    flash('Happy tracking! Tee hee!')
+    return redirect ("/")    
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the

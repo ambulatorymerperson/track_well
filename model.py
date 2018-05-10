@@ -35,7 +35,7 @@ class Daily_Input(db.Model):
     well_being_rating = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
-        return "<Date: %d user_id: %s sleep: %s exercise: %s screen time: %s well_being_rating: %s>" % (self.date, self.user_id, self.sleep, self.exercise, self.screen_time, self.well_being_rating)
+        return "<Date: {} user_id: {} sleep: {} exercise: {} screen time: {} well_being_rating: {}>".format(self.date, self.user_id, self.sleep, self.exercise, self.screen_time, self.well_being_rating)
 
 
 class User(db.Model):
@@ -51,8 +51,7 @@ class User(db.Model):
 
 
     def __repr__(self):
-        return "<User_id: %S Password: %s Name: %s Started tracking on:%s>\n" % (self.ID, 
-            self.password, self.name, self.first_entry_at)
+        return "<User_id: {} Password: {} Name: {} Started tracking on:{}>\n".format(self.ID, self.password, self.name, self.first_entry_at)
 
 
 ##############################################################################

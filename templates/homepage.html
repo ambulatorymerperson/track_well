@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+    <title>Welcome</title>
+</head>
+<body>
+    <h1>Welcome to track well</h1>
+<div>
+
+
+    {% if 'current_user' in session %}
+        <h3><a href="/my_stats">My Stats</a></h3>
+        <br><br><br>
+        <a href="/logout">Logout</a>
+        
+    {% endif %}
+
+    {% if 'current_user' not in session %}
+        <h2>login</h2>
+        <form action="/login" method="POST"><br>
+            E-mail: <input type=textbox name="email_input" required></input><br>
+            Password: <input type=textbox name="pw_input" required></input>
+            <br><input type=submit>
+
+        </form>
+
+        <br><br><br><br>
+
+        Don't have an account?<br><br>
+        Fill out the form below to register<br>
+
+        <form action="/register" method="POST"><br>
+            E-mail: <input type=textbox name="email_input"></input><br>
+            Password: <input type=textbox name="pw_input"></input>
+            <br><input type=submit>
+
+        </form>
+    {% endif %}
+
+
+</div>
+</body>
+</html>
