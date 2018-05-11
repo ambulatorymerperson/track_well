@@ -72,7 +72,8 @@ def show_user_stats():
         screentime += [info.screen_time]
         exercise += [info.exercise]
         well_being_rating += [info.well_being_rating]
-        
+    
+   
 
     return render_template("my_stats.html", sleep=sleep, screentime=screentime, exercise=exercise, well_being_rating=well_being_rating, name=name)
 

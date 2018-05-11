@@ -1,19 +1,87 @@
 <html>
 <head>
+
+
     <title></title>
 </head>
 <body>
-UNDER CONSTRUCTION 
+
 <br><br><br>
 <h1>{{ name }}'s stats</h1>
+screentime  {{ screentime }}
+<br> sleep {{ sleep }}
+<br> exercise {{ exercise }}
+<br> well-being {{ well_being_rating }}
+<br>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="http://code.highcharts.com/modules/exporting.js"></script>
+    <script src="//rawgithub.com/phpepe/highcharts-regression/master/highcharts-regression.js"> </script>
 
-{{ screentime }}
-<br>
-{{ sleep }}
-<br>
-{{ exercise }}
-<br>
-{{ well_being_rating }}
 
+<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script>
+"use strict"; 
+$(function () { 
+    var myChart = Highcharts.chart('container', {
+        chart: {
+            type: 'scatter',
+            zoomType: 'xy'
+        },
+        title: {
+            text: 'Habits and Wellness'
+        },
+        xAxis: {
+            title: {
+                text: 'habits'
+            }
+        },
+        yAxis: {
+            title: {
+                text: 'well-being'
+            }
+        },
+        legend: {
+                layout: 'vertical',
+                align: 'left',
+                verticalAlign: 'top',
+                x: 100,
+                y: 70,
+                floating: true,
+                backgroundColor: '#FFFFFF',
+                borderWidth: 1
+            },
+
+   
+        series: [
+           {regression: true ,
+            regressionSettings: {
+                type: 'linear',
+                color:  'rgba(45, 90, 255, .9)',
+                name: "%eq | r2: %r" 
+            },
+            name: 'sleep',
+            color: 'rgba(223, 83, 83, .5)',
+            data: [ [10, 5],[5, 3], [8,4], [7,4]]  
+            },
+
+            {regression: true ,
+            regressionSettings: {
+                type: 'linear',
+                color:  'rgba(40, 100, 2, .9)',
+                name: "%eq | r2: %r" 
+            },
+            
+            name: 'exercise',
+            color: 'rgba(223, 83, 83, .5)',
+            data: [ [1, 5],[0, 3], [.5,4], [.75, 4]] 
+            }
+
+            
+                    ]        
+    });
+});
+
+</script>
 </body>
 </html>
