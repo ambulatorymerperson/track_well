@@ -8,12 +8,6 @@
 <div>
 
 
-    {% if 'current_user' in session %}
-        <h3><a href="/my_stats">My Stats</a></h3>
-        <br><br><br>
-        <a href="/logout">Logout</a>
-        
-    {% endif %}
 
     {% if 'current_user' not in session %}
         <h2>login</h2>
@@ -32,7 +26,9 @@
         <form action="/register" method="POST"><br>
             E-mail: <input type=textbox name="email_input"></input><br>
             Password: <input type=textbox name="pw_input"></input>
-            <br><input type=submit>
+            <br>
+            Name: <input type=textbox name="name"></input><br>
+            <input type=submit>
 
         </form>
     {% endif %}

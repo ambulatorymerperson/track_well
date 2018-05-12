@@ -3,7 +3,7 @@ from statistical_functions import calculate_coefficient_of_determination
 from jinja2 import StrictUndefined
 
 from flask import (Flask, render_template, redirect, request, flash,
-                   session, copy_current_request_context)
+                   session, copy_current_request_context, json)
 
 
 from flask_debugtoolbar import DebugToolbarExtension
@@ -31,11 +31,12 @@ def register_process():
 
     email_input = request.form['email_input']
     pw_input = request.form['pw_input']
+    name = request.form['name']
 
-    if User.query.filter_by(email = email_input).all() != []:
+    if User.query.filter_by(ID = email_input).all() != []:
         return redirect('/')       
     else:
-        new_user = User(ID= ID, password=pw_input)
+        new_user = User(ID= email_input, password=pw_input, name=name)
         db.session.add(new_user)
         db.session.commit() 
 
@@ -72,10 +73,45 @@ def show_user_stats():
         screentime += [info.screen_time]
         exercise += [info.exercise]
         well_being_rating += [info.well_being_rating]
-    
-   
 
-    return render_template("my_stats.html", sleep=sleep, screentime=screentime, exercise=exercise, well_being_rating=well_being_rating, name=name)
+    
+    sleep_r = []
+    screentime_r = []
+    exercise_r = []
+
+    for i in range(len(sleep)) and range(len(well_being_rating)):
+        sleep_r.append([sleep[i], well_being_rating[i]])
+
+    for i in range(len(screentime)) and range(len(well_being_rating)):
+        screentime_r.append([screentime[i], well_being_rating[i]])
+
+    for i in range(len(exercise)) and range(len(well_being_rating)):
+        exercise_r.append([exercise[i], well_being_rating[i]])        
+
+
+    
+
+
+    return render_template("my_stats.html", sleep=sleep_r, screentime=screentime_r, exercise=exercise_r, name=name)
+
+@app.route("/chart_info")
+def get_chart_data():
+
+    current_user = session['current_user']
+    user_stats = Daily_Input.query.filter_by(user_id=current_user).all()
+    user = User.query.filter(User.ID == current_user).one()
+    sleep = []
+    screentime = []
+    exercise = []
+    well_being_rating = []
+
+    for info in user_stats:
+        sleep += [info.sleep]
+        screentime += [info.screen_time]
+        exercise += [info.exercise]
+        well_being_rating += [info.well_being_rating]
+
+    return jsonify(sleep), jsonify(screentime), jsonify(exercise), jsonify(well_being_rating)    
 
 @app.route("/logout")
 def logout():

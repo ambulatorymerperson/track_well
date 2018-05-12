@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+
+<div>
+
+{% if 'current_user' in session %}
+        <h3><a href="/my_stats">My Stats</a></h3>
+        <br><br><br>
+        <a href="/logout">Logout</a>
+{% endif %}        
+
+</div>
+
+{% block content %} {% endblock %}
+
+</body>
+</html>        

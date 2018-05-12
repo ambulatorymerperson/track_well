@@ -47,7 +47,7 @@ class User(db.Model):
     ID = db.Column(db.String(30), primary_key=True, nullable=False)
     password = db.Column(db.String(15), nullable=False)
     name = db.Column(db.String(15), nullable=False)
-    first_entry_at = db.Column(db.DateTime, nullable=False)
+    first_entry_at = db.Column(db.DateTime, nullable=True)
 
 
     def __repr__(self):
