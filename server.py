@@ -94,24 +94,25 @@ def show_user_stats():
 
     return render_template("my_stats.html", sleep=sleep_r, screentime=screentime_r, exercise=exercise_r, name=name)
 
-@app.route("/chart_info")
-def get_chart_data():
+@app.route("/record_daily_input")
+def add_info():
 
+
+    return render_template("record_daily_input.html")
+
+@app.route("/check_info")
+def check_info():  
     current_user = session['current_user']
-    user_stats = Daily_Input.query.filter_by(user_id=current_user).all()
-    user = User.query.filter(User.ID == current_user).one()
-    sleep = []
-    screentime = []
-    exercise = []
-    well_being_rating = []
 
-    for info in user_stats:
-        sleep += [info.sleep]
-        screentime += [info.screen_time]
-        exercise += [info.exercise]
-        well_being_rating += [info.well_being_rating]
+    sleep_h = request.args.get('sleep_h', '')
+    sleep_m = request.args.get('sleep_m')
+    exercise_h =  request.args.get('exercise_h')
+    exercise_m = request.args.get('exercise_m')
+    screentime_h = request.args.get('screentime_h')
+    screentime_m = request.args.get('screentime_m')
+    wellness_score = request.args.get('wellness_score')
 
-    return jsonify(sleep), jsonify(screentime), jsonify(exercise), jsonify(well_being_rating)    
+    return render_template("confirm_input.html", sleep_h=sleep_h, sleep_m=sleep_m, exercise_h=exercise_h, exercise_m=exercise_m, screentime_h=screentime_h, screentime_m=screentime_m, wellness_score=wellness_score)     
 
 @app.route("/logout")
 def logout():
