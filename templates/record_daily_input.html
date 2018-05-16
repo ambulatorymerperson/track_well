@@ -1,5 +1,6 @@
 <html>
 <head>    
+  
     <title>record info</title>
 <style>
 .tooltip {
@@ -29,31 +30,31 @@
 }
 
 
-.modal {
+/*.modal {
     display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    padding-top: 100px; /* Location of the box */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
+/*    position: fixed; /* Stay in place */
+/*    z-index: 1; /* Sit on top */
+/*    padding-top: 100px; /* Location of the box */
+/*    left: 0;
+/*    top: 0;
+/*    width: 100%; /* Full width */
+/*    height: 100%; /* Full height */
+/*    overflow: auto; /* Enable scroll if needed */
+/*    background-color: rgb(0,0,0); /* Fallback color */
+/*    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+/*}
 
 /* Modal Content */
-.modal-content {
+/*.modal-content {
     background-color: #fefefe;
     margin: auto;
     padding: 20px;
     border: 1px solid #888;
     width: 80%;
-}
+}*/
 
 /* The Close Button */
-.close {
+/*.close {
     color: #aaaaaa;
     float: right;
     font-size: 28px;
@@ -66,7 +67,7 @@
     text-decoration: none;
     cursor: pointer;
 }
-
+*/
 
 
 </style>
@@ -74,8 +75,10 @@
 </head>
 <body>
 <h1>Record what you did and how you felt yesterday.</h1>
+<h3>Behaviors and feelings for</h3><p id="date"></p>
 <br><br><br>
-<form action="/check_info" id="daily_log">
+<!-- <form action="/check_info" id="daily_log"> -->
+<form action="/add_info" id="daily_log">
 How much did you sleep the night before last?    
     <select name="sleep_h" id="sleep_hrs">
         <option value="0">0 hours</option>
@@ -239,9 +242,9 @@ Rate your sense of well-being yesterday on a scale from 1-5
 </form>
 
 
-<div id="myModal" class="modal">
+<!-- <div id="myModal" class="modal">
 
-  <!-- Modal content -->
+
   <div class="modal-content">
     <div class="modal-header">
       <span class="close">&times;</span>
@@ -256,34 +259,47 @@ Rate your sense of well-being yesterday on a scale from 1-5
     </div>
   </div>
 
-</div>
-
+</div> -->
+<script src="https://code.jQuery.com/jQuery-3.2.1.min.js"></script>
 <script>
+
+let today = new Date();
+let yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+let dd = yesterday.getDate();
+let mm = yesterday.getMonth()+1; //January is 0!
+let yyyy = yesterday.getFullYear();
+let yy = yyyy.toString();
+yy = yy.slice(2,4);
+yy = parseInt(yy);
+if(dd<10){dd='0'+dd} if(mm<10){mm='0'+mm} yesterday = mm+'/'+dd+'/'+yy;
+$("#date").html(yesterday);
+
 // Get the modal
-let modal = document.getElementById('myModal');
+// let modal = document.getElementById('myModal');
 
 // Get the button that opens the modal
-let btn = document.getElementById("submit_data");
+// let btn = document.getElementById("submit_data");
 
 // Get the <span> element that closes the modal
-let span = document.getElementsByClassName("close")[0];
+// let span = document.getElementsByClassName("close")[0];
 
 // When the user clicks the button, open the modal 
-btn.onclick = function() {
-    modal.style.display = "block";
-}
+// btn.onclick = function() {
+//    modal.style.display = "block";
+// }
 
 // When the user clicks on <span> (x), close the modal
-span.onclick = function() {
-    modal.style.display = "none";
-}
+// span.onclick = function() {
+//    modal.style.display = "none";
+// }
 
 // When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
-    }
-}
+// window.onclick = function(event) {
+//    if (event.target == modal) {
+//        modal.style.display = "none";
+//    }
+// }
 
 // "use strict";
 

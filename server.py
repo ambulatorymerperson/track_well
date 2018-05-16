@@ -95,13 +95,14 @@ def show_user_stats():
     return render_template("my_stats.html", sleep=sleep_r, screentime=screentime_r, exercise=exercise_r, name=name)
 
 @app.route("/record_daily_input")
-def add_info():
+def record_input():
 
 
     return render_template("record_daily_input.html")
 
-@app.route("/check_info")
-def check_info():  
+@app.route("/add_info")    
+def add_info():
+
     current_user = session['current_user']
 
     sleep_h = request.args.get('sleep_h', '')
@@ -112,7 +113,22 @@ def check_info():
     screentime_m = request.args.get('screentime_m')
     wellness_score = request.args.get('wellness_score')
 
-    return render_template("confirm_input.html", sleep_h=sleep_h, sleep_m=sleep_m, exercise_h=exercise_h, exercise_m=exercise_m, screentime_h=screentime_h, screentime_m=screentime_m, wellness_score=wellness_score)     
+    new_day_log = Daily_Input()
+
+
+# @app.route("/check_info")
+# def check_info():  
+#     current_user = session['current_user']
+
+#     sleep_h = request.args.get('sleep_h', '')
+#     sleep_m = request.args.get('sleep_m')
+#     exercise_h =  request.args.get('exercise_h')
+#     exercise_m = request.args.get('exercise_m')
+#     screentime_h = request.args.get('screentime_h')
+#     screentime_m = request.args.get('screentime_m')
+#     wellness_score = request.args.get('wellness_score')
+
+#     return render_template("confirm_input.html", sleep_h=sleep_h, sleep_m=sleep_m, exercise_h=exercise_h, exercise_m=exercise_m, screentime_h=screentime_h, screentime_m=screentime_m, wellness_score=wellness_score)     
 
 @app.route("/logout")
 def logout():
