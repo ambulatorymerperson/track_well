@@ -1,0 +1,305 @@
+<html>
+<head>    
+    <title>record info</title>
+<style>
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 500px;
+    background-color: pink;
+    color: #5f635c;
+    text-align: left;
+    padding: 5px 0;
+    
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    top: 200%;
+    left: 50%;
+    margin-left: -20px;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+
+
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+/* The Close Button */
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+
+</style>
+
+</head>
+<body>
+<h1>Record what you did and how you felt yesterday.</h1>
+<br><br><br>
+<form action="/check_info" id="daily_log">
+How much did you sleep the night before last?    
+    <select name="sleep_h" id="sleep_hrs">
+        <option value="0">0 hours</option>
+        <option value="1">1 hours</option>
+        <option value="2">2 hours</option>
+        <option value="3">3 hours</option>
+        <option value="4">4 hours</option>
+        <option value="5">5 hours</option>
+        <option value="6">6 hours</option>
+        <option value="7">7 hours</option>
+        <option value="8">8 hours</option>
+        <option value="9">9 hours</option>
+        <option value="10">10 hours</option>
+        <option value="11">11 hours</option>
+        <option value="12">12 hours</option>
+        <option value="13">13 hours</option>
+        <option value="14">14 hours</option>
+        <option value="15">15 hours</option>
+        <option value="16">16 hours</option>
+        <option value="17">17 hours</option>
+        <option value="18">18 hours</option>
+    </select> 
+    <select name="sleep_m" id="sleep_mins">
+        <option value="0">0 minutes</option>
+        <option value="10">10 minutes</option>
+        <option value="20">20 minutes</option>
+        <option value="30">30 minutes</option>
+        <option value="40">40 minutes</option>
+        <option value="50">50 minutes</option>
+    </select>    
+    <br><br>
+How much did you exercise yesterday?
+    <select name="exercise_h" id="exercise_hrs">
+        <option value="0">0 hours</option>
+        <option value="1">1 hours</option>
+        <option value="2">2 hours</option>
+        <option value="3">3 hours</option>
+        <option value="4">4 hours</option>
+        <option value="5">5 hours</option>
+        <option value="6">6 hours</option>
+        <option value="7">7 hours</option>
+        <option value="8">8 hours</option> 
+    </select>
+    <select name="exercise_m" id="exercise_mins">
+        <option value="0">0 minutes</option>
+        <option value="5">5 minutes</option>
+        <option value="10">10 minutes</option>
+        <option value="15">15 minutes</option>
+        <option value="20">20 minutes</option>
+        <option value="25">25 minutes</option>
+        <option value="30">30 minutes</option>
+        <option value="35">35 minutes</option>
+        <option value="40">40 minutes</option>
+        <option value="45">45 minutes</option>
+        <option value="50">50 minutes</option>
+        <option value="55">55 minutes</option>
+    </select> 
+<br><br>    
+What was your screentime yesterday?
+    <select name="screentime_h" id="screentime_hrs">
+        <option value="0">0 hours</option>
+        <option value="1">1 hours</option>
+        <option value="2">2 hours</option>
+        <option value="3">3 hours</option>
+        <option value="4">4 hours</option>
+        <option value="5">5 hours</option>
+        <option value="6">6 hours</option>
+        <option value="7">7 hours</option>
+        <option value="8">8 hours</option>
+        <option value="9">9 hours</option>
+        <option value="10">10 hours</option>
+        <option value="11">11 hours</option>
+        <option value="12">12 hours</option>
+        <option value="13">13 hours</option>
+        <option value="14">14 hours</option>
+        <option value="15">15 hours</option> 
+        <option value="16">16 hours</option>
+        <option value="17">17 hours</option>
+        <option value="18">18 hours</option>
+    </select>
+    <select name="screentime_m" id="screentime_mins">
+        <option value="0">0 minutes</option>                   
+        <option value="1">1 minutes</option>
+        <option value="2">2 minutes</option>
+        <option value="3">3 minutes</option>
+        <option value="4">4 minutes</option>
+        <option value="5">5 minutes</option>
+        <option value="6">6 minutes</option>
+        <option value="7">7 minutes</option>
+        <option value="8">8 minutes</option>
+        <option value="9">9 minutes</option>
+        <option value="10">10 minutes</option>
+        <option value="11">11 minutes</option>
+        <option value="12">12 minutes</option>
+        <option value="13">13 minutes</option>
+        <option value="14">14 minutes</option>
+        <option value="15">15 minutes</option>
+        <option value="16">16 minutes</option>
+        <option value="17">17 minutes</option>
+        <option value="18">18 minutes</option>
+        <option value="19">19 minutes</option>
+        <option value="20">20 minutes</option>
+        <option value="21">21 minutes</option>
+        <option value="22">22 minutes</option>
+        <option value="23">23 minutes</option>
+        <option value="24">24 minutes</option>
+        <option value="25">25 minutes</option>
+        <option value="26">26 minutes</option>
+        <option value="27">27 minutes</option>
+        <option value="28">28 minutes</option>
+        <option value="29">29 minutes</option>
+        <option value="30">30 minutes</option>
+        <option value="31">31 minutes</option>
+        <option value="32">32 minutes</option>
+        <option value="33">33 minutes</option>
+        <option value="34">34 minutes</option>
+        <option value="35">35 minutes</option>
+        <option value="36">36 minutes</option>
+        <option value="37">37 minutes</option>
+        <option value="38">38 minutes</option>
+        <option value="39">39 minutes</option>
+        <option value="40">40 minutes</option>
+        <option value="41">41 minutes</option>
+        <option value="42">42 minutes</option>
+        <option value="43">43 minutes</option>
+        <option value="44">44 minutes</option>
+        <option value="45">45 minutes</option>
+        <option value="46">46 minutes</option>
+        <option value="47">47 minutes</option>
+        <option value="48">48 minutes</option>
+        <option value="49">49 minutes</option>
+        <option value="50">50 minutes</option>
+        <option value="51">51 minutes</option>
+        <option value="52">52 minutes</option>
+        <option value="53">53 minutes</option>
+        <option value="54">54 minutes</option>
+        <option value="55">55 minutes</option>
+        <option value="56">56 minutes</option>
+        <option value="57">57 minutes</option>
+        <option value="58">58 minutes</option>
+        <option value="59">59 minutes</option>
+    </select>
+<br><br>
+Rate your sense of well-being yesterday on a scale from 1-5
+    <select name="wellness_score">
+        <option value="0">0 </option>
+        <option value="1">1 </option>
+        <option value="2">2 </option>
+        <option value="3">3 </option>
+        <option value="4">4 </option>
+        <option value="5">5 </option>
+    </select><br>     
+<div class="tooltip">need help quantifying your sense of wellness?
+  <span class="tooltiptext"> &nbsp;5) euphoric; exalted; deeply contented<br>
+    &nbsp;4) generally pleased; good amount of energy; feeling capable <br>
+    &nbsp;3) feeling fine; average<br>
+    &nbsp;2) feeling down; lower energy than usual<br>
+    &nbsp;1) depressed; common tasks seem insurmountable; unable to experience pleasure.</span>
+</div><br><br><br> 
+<br><input type=submit id="submit_data">
+</form>
+
+
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+    <div class="modal-header">
+      <span class="close">&times;</span>
+      <h2>Modal Header</h2>
+    </div>
+    <div class="modal-body">
+      <p>Some text in the Modal Body</p>
+      <p>Some other text...</p>
+    </div>
+    <div class="modal-footer">
+      <h3>Modal Footer</h3>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Get the modal
+let modal = document.getElementById('myModal');
+
+// Get the button that opens the modal
+let btn = document.getElementById("submit_data");
+
+// Get the <span> element that closes the modal
+let span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal 
+btn.onclick = function() {
+    modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
+// "use strict";
+
+
+// let daily_log = document.querySelector('#daily_log');
+// let message = "lalala";
+ 
+        
+
+// function confirmSubmission(evt) {
+//     alert(message)};
+   
+
+// daily_log.addEventListener('submit', confirmSubmission);
+
+
+// </script>   
+</body>
+</html>               
