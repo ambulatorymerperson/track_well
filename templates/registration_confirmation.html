@@ -1,0 +1,21 @@
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+Welcome, {{ name }}!<br>
+We have your email as {{ session['current_user']}}<br>
+Would you like to see the password you set?<br>
+<button type = "button" id = "pass_ask">show password</button>
+<p id = "password"> </p>
+<script src="https://code.jQuery.com/jQuery-3.2.1.min.js"></script>
+<script>
+
+let password = {{ password|tojson|safe }};
+
+$("#pass_ask").on("click", function(){
+    $("#password").html(password);
+})
+</script>
+</body>
+</html>

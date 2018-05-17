@@ -2,11 +2,15 @@ from statistical_functions import calculate_coefficient_of_determination
 
 from jinja2 import StrictUndefined
 
+from math import floor
+
 from flask import (Flask, render_template, redirect, request, flash,
                    session, copy_current_request_context, json)
 
 
 from flask_debugtoolbar import DebugToolbarExtension
+
+from datetime import date, timedelta
 
 from model import User, Daily_Input, connect_to_db, db
 
@@ -38,9 +42,19 @@ def register_process():
     else:
         new_user = User(ID= email_input, password=pw_input, name=name)
         db.session.add(new_user)
-        db.session.commit() 
+        db.session.commit()
+        session['current_user'] = email_input 
 
-    return redirect('/')
+    return redirect('/registration_confirmation')
+
+@app.route("/registration_confirmation")
+def confirm_registration():
+    user_email = session['current_user']
+    user = User.query.filter(User.ID == user_email).one()
+    name = user.name
+    password = user.password    
+
+    return render_template("registration_confirmation.html", name=name, password=password)
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -100,20 +114,32 @@ def record_input():
 
     return render_template("record_daily_input.html")
 
-@app.route("/add_info")    
+@app.route("/add_info", methods=["POST"])    
 def add_info():
 
     current_user = session['current_user']
 
-    sleep_h = request.args.get('sleep_h', '')
-    sleep_m = request.args.get('sleep_m')
-    exercise_h =  request.args.get('exercise_h')
-    exercise_m = request.args.get('exercise_m')
-    screentime_h = request.args.get('screentime_h')
-    screentime_m = request.args.get('screentime_m')
-    wellness_score = request.args.get('wellness_score')
+    sleep_h = request.form.get('sleep_h')
+    sleep_m = request.form.get('sleep_m')
+    exercise_h =  request.form.get('exercise_h')
+    exercise_m = request.form.get('exercise_m')
+    screentime_h = request.form.get('screentime_h')
+    screentime_m = request.form.get('screentime_m')
+    wellness_score = request.form.get('wellness_score')
+    yesterday = date.today() - timedelta(1)
 
-    new_day_log = Daily_Input()
+
+    sleep_t = round((float(sleep_m)/60.0) + float(sleep_h), 2)
+    exercise_t = round((float(exercise_m)/60.0) + float(exercise_h), 2)
+    screentime_t = round((float(screentime_m)/60.0) + float(screentime_h), 2)
+
+    wellness_score = int(wellness_score)
+
+    new_day_log = Daily_Input(date=yesterday, user_id=current_user, sleep=sleep_t, exercise=exercise_t, screen_time=screentime_t, well_being_rating=wellness_score)
+    db.session.add(new_day_log)
+    db.session.commit()
+
+    return redirect('/my_stats')
 
 
 # @app.route("/check_info")
@@ -127,8 +153,17 @@ def add_info():
 #     screentime_h = request.args.get('screentime_h')
 #     screentime_m = request.args.get('screentime_m')
 #     wellness_score = request.args.get('wellness_score')
+#     yesterday = date.today() - timedelta(1)
 
-#     return render_template("confirm_input.html", sleep_h=sleep_h, sleep_m=sleep_m, exercise_h=exercise_h, exercise_m=exercise_m, screentime_h=screentime_h, screentime_m=screentime_m, wellness_score=wellness_score)     
+
+
+#     sleep_t = round((float(sleep_m)/60) + float(sleep_h), 2)
+#     exercise_t = round((float(exercise_m)/60) + float(exercise_h), 2)
+#     screentime_t = round((float(screentime_m)/60) + float(screentime_h), 2)
+
+
+
+#     return render_template("confirm_input.html", sleep_h=sleep_h, sleep_m=sleep_m, sleep_t=sleep_t, exercise_h=exercise_h, exercise_m=exercise_m, exercise_t=exercise_t, screentime_h=screentime_h, screentime_m=screentime_m, screentime_t=screentime_t, wellness_score=wellness_score, yesterday=yesterday)     
 
 @app.route("/logout")
 def logout():

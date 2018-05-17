@@ -1,0 +1,18 @@
+<html>
+<head>
+    <title>Check Info</title>
+</head>
+<body>
+<h2>Please make sure the following information is accurate before we add it to your records:</h2> 
+
+<p>for {{ yesterday.strftime('%m/%d/%y') }}: <br> 
+   sleep: {{ sleep_h }} hours and {{ sleep_m }} minutes // INTO TABLE: {{ sleep_t }} hours<br>
+   exercise: {{ exercise_h }} hours and {{ exercise_m }} minutes // INTO TABLE {{ exercise_t }} hours<br>
+   screentime: {{ screentime_h }} hours and {{ screentime_m }} minutes// INTO TABLE {{ screentime_t }} hours<br>
+   sense of well-being: {{ wellness_score }}</p>
+
+<a href="/record_daily_input">Go Back</a> &nbsp; &nbsp; &nbsp; <input type=submit>   
+
+
+</body>
+</html>

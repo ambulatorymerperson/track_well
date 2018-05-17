@@ -74,11 +74,11 @@
 
 </head>
 <body>
-<h1>Record what you did and how you felt yesterday.</h1>
-<h3>Behaviors and feelings for</h3><p id="date"></p>
+<h1> {{ session['current_user'] }} Record what you did and how you felt yesterday.</h1>
+<!-- <h3>Behaviors and feelings for</h3><p id="date"></p> -->
 <br><br><br>
 <!-- <form action="/check_info" id="daily_log"> -->
-<form action="/add_info" id="daily_log">
+<form action="/add_info" id="daily_log" method="POST">
 How much did you sleep the night before last?    
     <select name="sleep_h" id="sleep_hrs">
         <option value="0">0 hours</option>
@@ -224,20 +224,25 @@ What was your screentime yesterday?
 <br><br>
 Rate your sense of well-being yesterday on a scale from 1-5
     <select name="wellness_score">
-        <option value="0">0 </option>
         <option value="1">1 </option>
         <option value="2">2 </option>
         <option value="3">3 </option>
         <option value="4">4 </option>
         <option value="5">5 </option>
-    </select><br>     
+    </select><br>
+
 <div class="tooltip">need help quantifying your sense of wellness?
   <span class="tooltiptext"> &nbsp;5) euphoric; exalted; deeply contented<br>
     &nbsp;4) generally pleased; good amount of energy; feeling capable <br>
     &nbsp;3) feeling fine; average<br>
     &nbsp;2) feeling down; lower energy than usual<br>
     &nbsp;1) depressed; common tasks seem insurmountable; unable to experience pleasure.</span>
-</div><br><br><br> 
+</div><br><br><br><br>
+Submit data for yesterday: 
+    <select name="date">
+        <option value="" id="choose_date"></option>
+    </select><br>    
+<br> 
 <br><input type=submit id="submit_data">
 </form>
 
@@ -273,8 +278,7 @@ let yy = yyyy.toString();
 yy = yy.slice(2,4);
 yy = parseInt(yy);
 if(dd<10){dd='0'+dd} if(mm<10){mm='0'+mm} yesterday = mm+'/'+dd+'/'+yy;
-$("#date").html(yesterday);
-
+$("#choose_date").html(yesterday);
 // Get the modal
 // let modal = document.getElementById('myModal');
 
