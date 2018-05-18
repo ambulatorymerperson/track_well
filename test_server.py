@@ -5,7 +5,7 @@ import unittest
 
 
 class MyAppIntegrationTestCase(unittest.TestCase):
-    """Examples of integration tests: testing Flask server."""
+    """testing Flask server"""
 
     def test_index(self):
         client = server.app.test_client()

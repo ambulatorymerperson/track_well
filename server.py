@@ -2,7 +2,10 @@ from statistical_functions import calculate_coefficient_of_determination
 
 from jinja2 import StrictUndefined
 
-from math import floor
+from math import sqrt
+from scipy import stats
+import numpy as np
+
 
 from flask import (Flask, render_template, redirect, request, flash,
                    session, copy_current_request_context, json)
@@ -19,6 +22,8 @@ app = Flask(__name__)
 
 
 app.secret_key = "ZYX"
+
+regression_info = {}
 
 @app.route('/')
 def show_homepage():
@@ -93,20 +98,76 @@ def show_user_stats():
     screentime_r = []
     exercise_r = []
 
-    for i in range(len(sleep)) and range(len(well_being_rating)):
-        sleep_r.append([sleep[i], well_being_rating[i]])
+    regression_lines = [sleep_r, screentime_r, exercise_r]
+    independent_variables = [sleep, screentime, exercise]
 
-    for i in range(len(screentime)) and range(len(well_being_rating)):
-        screentime_r.append([screentime[i], well_being_rating[i]])
 
-    for i in range(len(exercise)) and range(len(well_being_rating)):
-        exercise_r.append([exercise[i], well_being_rating[i]])        
+    # goes through each item in each independent variable list and pairs it with its corresponding
+    # wellness score. The item and the wellness score become a sublist, which is appended to a 
+    # list in regression lines. Because this loop simulatenously goes through regression_lines
+    # and independent_variables, sleep_r uses data from sleep, screentime_r uses data from screentime, etc.
+    for j in range(len(independent_variables)) and range(len(regression_lines)):
+        for i in range(len(independent_variables[j])) and range(len(well_being_rating)):
+            regression_lines[j].append([independent_variables[j][i], well_being_rating[i]])
 
+    # for i in range(len(sleep)) and range(len(well_being_rating)):
+    #     sleep_r.append([sleep[i], well_being_rating[i]])
+
+    # for i in range(len(screentime)) and range(len(well_being_rating)):
+    #     screentime_r.append([screentime[i], well_being_rating[i]])
+
+    # for i in range(len(exercise)) and range(len(well_being_rating)):
+    #     exercise_r.append([exercise[i], well_being_rating[i]])
 
     
 
+    
 
-    return render_template("my_stats.html", sleep=sleep_r, screentime=screentime_r, exercise=exercise_r, name=name)
+    for lst in independent_variables:    
+        slope, intercept, r_value, p_value, std_err = stats.linregress(lst, well_being_rating)
+        sub_dict = {'slope': slope, 'intercept': intercept, 'r_value': r_value, 'p_value': p_value, 'std_err': std_err}
+        if lst == sleep:
+            regression_info["sleep"] = sub_dict
+        elif lst == screentime:
+            regression_info["screentime"] = sub_dict
+        elif lst == exercise:
+            regression_info["exercise"] = sub_dict
+        
+
+    for key in list(regression_info.keys()):
+        for lst in independent_variables:
+            if key == "sleep" and lst == sleep:
+                add_regression_info_to_dict(key, lst, len(lst))
+            if key == "screentime" and lst == screentime:
+                add_regression_info_to_dict(key, lst, len(lst))
+            if key == "exercise" and lst == exercise:
+                add_regression_info_to_dict(key, lst, len(lst))  
+
+    determine_relevence_of_behavior(regression_info)                  
+    
+    return render_template("my_stats.html", sleep=sleep_r, screentime=screentime_r, exercise=exercise_r, name=name, independent_variables=independent_variables, regression_info=regression_info)             
+                 
+# key refers to keys in regression_info dictionary. These keys share the same name as the lists in the
+# independent variable list, because the dictionary info is based on these lists
+def add_regression_info_to_dict(key, lst, n):
+    """Calculate adjusted r squared for each data set of dependent + independent variables, and add it to the data set dict."""    
+# n is the sample size
+# adjusted_r_squared formula used can be found here: http://mtweb.mtsu.edu/stats/dictionary/formula.htm   
+    regression_info[key]['n'] = len(lst)
+    r_value = regression_info[key]['r_value']
+# I hardcoded k to 1 because for the first chart, each scatter plot and regression line is for 1
+# independent variable (k is supposed to be number of independent variables).    
+    adjusted_r_squared = 1 - (((1 - r_value**2) * (n-1))/(n-1-1))
+    regression_info[key]['adjusted_r_squared'] = adjusted_r_squared
+
+def determine_relevence_of_behavior(dict):
+    """Pass in the dict with all the regression info and see which behaviors are most relevent to the user.
+    Return print statements that provide correlative insights."""
+
+
+
+
+    
 
 @app.route("/record_daily_input")
 def record_input():
