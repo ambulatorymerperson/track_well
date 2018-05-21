@@ -55,7 +55,19 @@ class User(db.Model):
 
 
 ##############################################################################
-# work on later
+def example_data():
+    """sample data for test"""
+
+    Ly = users(ID="Leroy", password="bad", name="Brown")
+    
+    jan1 = daily_inputs(date=2018-01-01, user_id="Leroy", sleep=4, exercise=3, screen_time=0, well_being_rating=5)
+    jan2 = daily_inputs(date=2018-01-02, user_id="Leroy", sleep=10, exercise= 4, screen_time=0, well_being_rating=4)
+    jan3 = daily_inputs(date=2018-01-03, user_id="Leroy", sleep= 6, exercise=1, screen_time=0, well_being_rating=3)
+    jan4 = daily_inputs(date=2018-03-17, user_id="Leroy", sleep=7.5, exercise=2, screen_time=0, well_being_rating=4)
+    jan5 = daily_inputs(date=2018-03-17, user_id="Leroy", sleep=10, exercise=0, screen_time=0, well_being_rating=4)
+
+    db.session.add_all([Ly, jane1, jan2, jan3, jan4, jan5])
+    db.session.commit()
 
 def init_app():
     from flask import Flask

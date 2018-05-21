@@ -143,9 +143,15 @@ def show_user_stats():
             if key == "exercise" and lst == exercise:
                 add_regression_info_to_dict(key, lst, len(lst))  
 
-    determine_relevence_of_behavior(regression_info)                  
+    ordered_ars = determine_relevence_of_behavior(regression_info)
+
+    most_relevent_activity = "behavior"
+
+    for behavior in regression_info:
+        if regression_info[behavior]["adjusted_r_squared"] == ordered_ars[-1]:
+            most_relevent_activity = behavior                   
     
-    return render_template("my_stats.html", sleep=sleep_r, screentime=screentime_r, exercise=exercise_r, name=name, independent_variables=independent_variables, regression_info=regression_info)             
+    return render_template("my_stats.html", sleep=sleep_r, screentime=screentime_r, exercise=exercise_r, name=name, independent_variables=independent_variables, regression_info=regression_info, most_relevent_activity=most_relevent_activity, ordered_ars=ordered_ars)             
                  
 # key refers to keys in regression_info dictionary. These keys share the same name as the lists in the
 # independent variable list, because the dictionary info is based on these lists
@@ -163,6 +169,14 @@ def add_regression_info_to_dict(key, lst, n):
 def determine_relevence_of_behavior(dict):
     """Pass in the dict with all the regression info and see which behaviors are most relevent to the user.
     Return print statements that provide correlative insights."""
+
+    highest_influences = []
+
+    for behavior in regression_info:
+        r = regression_info[behavior]["adjusted_r_squared"]
+        highest_influences.append(r)
+
+    return sorted(highest_influences)    
 
 
 
