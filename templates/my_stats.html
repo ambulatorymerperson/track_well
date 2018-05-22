@@ -11,12 +11,18 @@
 
  <p>Out of all the activities you are tracking, {{ most_relevent_activity }} is the most relevent to your sense of well-being.</p> 
 <br>
+{{screentime}} <br> {{ screen_points }}<br><br>
+{{sleep}} <br> {{ sleep_points }}<br><br>
+{{exercise}} <br> {{ exercise_points }}<br>
 <script src="http://code.highcharts.com/highcharts.js"></script>
 <script src="http://code.highcharts.com/modules/exporting.js"></script>
     <script src="//rawgithub.com/phpepe/highcharts-regression/master/highcharts-regression.js"> </script>
 
 
-<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+<div id="chart-A" class="chart"></div> <!-- Container for Chart A -->
+<div class="spacer"></div>
+<div id="chart-B" class="chart"></div> <!-- Container for Chart B -->
+
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script>
 "use strict";
@@ -24,18 +30,20 @@
 let screentime = {{ screentime|tojson|safe }};
 let sleep = {{ sleep|tojson|safe }};
 let exercise = {{ exercise|tojson|safe }};
-
+let screen_points = {{ screen_points|tojson|safe }};
+let sleep_points = {{ sleep_points|tojson|safe }};
+let exercise_points = {{ exercise_points|tojson|safe }};
 
 
 
 $(function () { 
-   let  myChart = Highcharts.chart('container', {
+   let  myChart = Highcharts.chart('chart-A', {
         chart: {
             type: 'scatter',
             zoomType: 'xy'
         },
         title: {
-            text: 'Habits and Wellness'
+            text: 'What You Do and How You Feel When You Do It '
         },
         xAxis: {
             title: {
@@ -101,6 +109,79 @@ $(function () {
 
 });
 
+
+$(function () { 
+   let  myChartNextDay = Highcharts.chart('chart-B', {
+        chart: {
+            type: 'scatter',
+            zoomType: 'xy'
+        },
+        title: {
+            text: 'Behaviors & How You Feel the Next Day'
+        },
+        xAxis: {
+            title: {
+                text: 'habits'
+            }
+        },
+        yAxis: {
+            title: {
+                text: 'well-being'
+            }
+        },
+        legend: {
+                layout: 'vertical',
+                align: 'left',
+                verticalAlign: 'top',
+                x: 100,
+                y: 70,
+                floating: true,
+                backgroundColor: '#FFFFFF',
+                borderWidth: 1
+            },
+
+   
+        series: [
+           {regression: true ,
+            regressionSettings: {
+                type: 'linear',
+                color:  'rgba(45, 90, 255, .9)',
+                name: "%eq | r2: %r" 
+            },
+            name: 'sleep',
+            color: 'rgba(223, 83, 83, .5)',
+            data: sleep_points 
+            },
+
+            {regression: true ,
+            regressionSettings: {
+                type: 'linear',
+                color:  'rgba(40, 100, 2, .9)',
+                name: "%eq | r2: %r" 
+            },
+            
+            name: 'exercise',
+            color: 'rgba(223, 83, 83, .5)',
+            data: exercise_points 
+            },
+
+            {regression: true ,
+            regressionSettings: {
+                type: 'linear',
+                color:  'rgba(60, 100, 2, 10)',
+                name: "%eq | r2: %r" 
+            },
+            
+            name: 'screentime',
+            color: 'rgba(223, 90, 40, .5)',
+            data: screen_points
+            }
+                    ] 
+    });
+
+
+
+});
 
 
 

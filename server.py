@@ -79,7 +79,7 @@ def login():
 def show_user_stats():
 
     current_user = session['current_user']
-    user_stats = Daily_Input.query.filter_by(user_id=current_user).all()
+    user_stats = Daily_Input.query.filter_by(user_id=current_user).order_by('date').all()
     user = User.query.filter(User.ID == current_user).one()
     name = user.name
     sleep = []
@@ -101,6 +101,7 @@ def show_user_stats():
     regression_lines = [sleep_r, screentime_r, exercise_r]
     independent_variables = [sleep, screentime, exercise]
 
+    sleep_points, screen_points, exercise_points = find_next_day_effects(independent_variables, well_being_rating)
 
     # goes through each item in each independent variable list and pairs it with its corresponding
     # wellness score. The item and the wellness score become a sublist, which is appended to a 
@@ -151,7 +152,7 @@ def show_user_stats():
         if regression_info[behavior]["adjusted_r_squared"] == ordered_ars[-1]:
             most_relevent_activity = behavior                   
     
-    return render_template("my_stats.html", sleep=sleep_r, screentime=screentime_r, exercise=exercise_r, name=name, independent_variables=independent_variables, regression_info=regression_info, most_relevent_activity=most_relevent_activity, ordered_ars=ordered_ars)             
+    return render_template("my_stats.html", sleep=sleep_r, screentime=screentime_r, exercise=exercise_r, name=name, independent_variables=independent_variables, regression_info=regression_info, most_relevent_activity=most_relevent_activity, ordered_ars=ordered_ars, sleep_points=sleep_points, screen_points=screen_points, exercise_points=exercise_points)             
                  
 # key refers to keys in regression_info dictionary. These keys share the same name as the lists in the
 # independent variable list, because the dictionary info is based on these lists
@@ -178,7 +179,19 @@ def determine_relevence_of_behavior(dict):
 
     return sorted(highest_influences)    
 
+def find_next_day_effects(indep_v_list, wellness_scores):
 
+    sleep_points = []
+    screen_points = []
+    exercise_points = []
+
+    plot_points_for_next_day_effects = [sleep_points, screen_points, exercise_points]
+
+    for j in range(len(indep_v_list)) and range(len(plot_points_for_next_day_effects)):
+        for i in range(len(indep_v_list[j])) and range(len(wellness_scores)-1):
+            plot_points_for_next_day_effects[j].append([indep_v_list[j][i], wellness_scores[i+1]])
+
+    return plot_points_for_next_day_effects[0], plot_points_for_next_day_effects[1], plot_points_for_next_day_effects[2]        
 
 
     
