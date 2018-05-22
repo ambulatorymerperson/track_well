@@ -25,6 +25,8 @@ app.secret_key = "ZYX"
 
 regression_info = {}
 
+next_day_regression_info = {}
+
 @app.route('/')
 def show_homepage():
     """show home page"""
@@ -78,6 +80,8 @@ def login():
 @app.route("/my_stats")
 def show_user_stats():
 
+    if 'current_user' not in session:
+        return redirect('/')
     current_user = session['current_user']
     user_stats = Daily_Input.query.filter_by(user_id=current_user).order_by('date').all()
     user = User.query.filter(User.ID == current_user).one()
@@ -198,6 +202,9 @@ def find_next_day_effects(indep_v_list, wellness_scores):
 
 @app.route("/record_daily_input")
 def record_input():
+
+    if 'current_user' not in session:
+        return redirect('/')
 
 
     return render_template("record_daily_input.html")
