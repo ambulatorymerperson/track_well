@@ -36,18 +36,38 @@ class WellnessTrackerTestsDatabase(unittest.TestCase):
         db.create_all()
         example_data()
 
-    def test_login(self):
+
+    def test_login_and_logout(self):
         result = self.client.post("/login",
-                              data={"user_id": "Leroy",
-                                    "password": "bad"},
+                              data={"email_input": "Leroy",
+                                    "pw_input": "bad"},
                               follow_redirects=True)
-        self.assertIn('your sense of well-being', result.data) 
+        self.assertIn('Out of all the activities you are tracking', result.data)
+
+        result = self.client.get("/logout", follow_redirects=True)
+        self.assertIn('Welcome to track well', result.data)
+
+        result = self.client.post("/login",
+                              data={"email_input": "Leroy",
+                                    "pw_input": "cheese"},
+                              follow_redirects=True)
+        self.assertIn('Invalid password. Please try again.', result.data)
+
+        result = self.client.post("/login",
+                              data={"email_input": "Heroy",
+                                    "pw_input": "cheese"},
+                              follow_redirects=True)
+        self.assertIn('That email is not in our database. Please check your spelling, or use the form below to register', result.data) 
+
+
 
     def test_rsquared(self):
+        with self.client as c:
+          with c.session_transaction() as sess:
+              sess['current_user'] = "Leroy"
 
-        result = self.client.get("/my_stats", data={"User.ID": "Leroy"},
-                                            follow_redirects=True)
-        self.assertIn("Out of all the activities you are tracking, sleep is the most relevent to your sense of well-being.", result.data)    
+        result = self.client.get("/my_stats")
+        self.assertIn("Out of all the activities you are tracking, exercise is the most relevent to your sense of well-being.", result.data)    
 
         #sleep r2 should be 0.07409284
         #exercise r2 should be 0.19998784       

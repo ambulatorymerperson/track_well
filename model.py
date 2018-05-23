@@ -2,7 +2,7 @@
 
 from flask_sqlalchemy import SQLAlchemy
 import time
-import datetime
+from datetime import date, timedelta
 # how to use datetime : http://www.pythonforbeginners.com/basics/python-datetime-time-examples
 
 # >>> print datetime.date.today().strftime("%B")
@@ -58,17 +58,20 @@ class User(db.Model):
 def example_data():
     """sample data for test"""
 
-    Ly = User(ID="Leroy", password="bad", name="Brown")
+    ly = User(ID="Leroy", password="bad", name="Brown")
+
+    db.session.add(ly)
+    db.session.commit()
     
-    jan1 = Daily_Input(date=2018-01-01, user_id="Leroy", sleep=4, exercise=3, screen_time=0, well_being_rating=5)
-    jan2 = Daily_Input(date=2018-01-02, user_id="Leroy", sleep=10, exercise= 4, screen_time=0, well_being_rating=4)
-    jan3 = Daily_Input(date=2018-01-03, user_id="Leroy", sleep= 6, exercise=1, screen_time=0, well_being_rating=3)
-    jan4 = Daily_Input(date=2018-03-17, user_id="Leroy", sleep=7.5, exercise=2, screen_time=0, well_being_rating=4)
-    jan5 = Daily_Input(date=2018-03-17, user_id="Leroy", sleep=10, exercise=0, screen_time=0, well_being_rating=4)
+    jan1 = Daily_Input(date=date.today(), user_id="Leroy", sleep=4, exercise=3, screen_time=0, well_being_rating=5)
+    jan2 = Daily_Input(date=date.today() - timedelta(1), user_id="Leroy", sleep=10, exercise= 4, screen_time=0, well_being_rating=4)
+    jan3 = Daily_Input(date=date.today() - timedelta(2), user_id="Leroy", sleep= 6, exercise=1, screen_time=0, well_being_rating=3)
+    jan4 = Daily_Input(date=date.today() - timedelta(3), user_id="Leroy", sleep=7.5, exercise=2, screen_time=0, well_being_rating=4)
+    jan5 = Daily_Input(date=date.today() - timedelta(4), user_id="Leroy", sleep=10, exercise=0, screen_time=0, well_being_rating=4)
 
 
 
-    db.session.add_all([Ly, jan1, jan2, jan3, jan4, jan5])
+    db.session.add_all([jan1, jan2, jan3, jan4, jan5])
     db.session.commit()
 
 def init_app():

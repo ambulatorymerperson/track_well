@@ -71,11 +71,15 @@ def login():
     if User.query.filter(User.ID == email_input, User.password == pw_input).all() != []:
         user = User.query.filter(User.ID == email_input).one()
         session['current_user'] = user.ID
-        flash('You were successfully logged in')
+        flash('You were successfully logged in', 'success')
         return redirect("/my_stats")
-    else:
-        flash('Your e-mail or password was incorrect! Please try again or Register.')
-        return render_template("log_in.html")
+    elif User.query.filter(User.ID == email_input).all() == []:
+        flash('That email is not in our database. Please check your spelling, or use the form below to register', 'error')
+        return redirect("/")
+    elif User.query.filter(User.ID == email_input, User.password == pw_input).all()  == []:
+        flash('Invalid password. Please try again.', 'error')
+        return redirect("/")    
+
 
 @app.route("/my_stats")
 def show_user_stats():
