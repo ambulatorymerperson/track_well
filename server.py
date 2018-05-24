@@ -56,6 +56,10 @@ def register_process():
 
 @app.route("/registration_confirmation")
 def confirm_registration():
+
+    if 'current_user' not in session:
+        return redirect('/')
+
     user_email = session['current_user']
     user = User.query.filter(User.ID == user_email).one()
     name = user.name
@@ -71,7 +75,6 @@ def login():
     if User.query.filter(User.ID == email_input, User.password == pw_input).all() != []:
         user = User.query.filter(User.ID == email_input).one()
         session['current_user'] = user.ID
-        flash('You were successfully logged in', 'success')
         return redirect("/my_stats")
     elif User.query.filter(User.ID == email_input).all() == []:
         flash('That email is not in our database. Please check your spelling, or use the form below to register', 'error')
@@ -86,6 +89,7 @@ def show_user_stats():
 
     if 'current_user' not in session:
         return redirect('/')
+
     current_user = session['current_user']
     user_stats = Daily_Input.query.filter_by(user_id=current_user).order_by('date').all()
     user = User.query.filter(User.ID == current_user).one()
@@ -110,6 +114,10 @@ def show_user_stats():
     independent_variables = [sleep, screentime, exercise]
 
     sleep_points, screen_points, exercise_points = find_next_day_effects(independent_variables, well_being_rating)
+
+    next_day_plot_points = [sleep_points, screen_points, exercise_points]
+
+    next_day_regression_info = create_regression_dict(next_day_plot_points, sleep_points, screen_points, exercise_points)
 
     # goes through each item in each independent variable list and pairs it with its corresponding
     # wellness score. The item and the wellness score become a sublist, which is appended to a 
@@ -146,11 +154,20 @@ def show_user_stats():
     for key in list(regression_info.keys()):
         for lst in independent_variables:
             if key == "sleep" and lst == sleep:
-                add_regression_info_to_dict(key, lst, len(lst))
+                add_regression_info_to_dict(regression_info, key, lst, len(lst))
             if key == "screentime" and lst == screentime:
-                add_regression_info_to_dict(key, lst, len(lst))
+                add_regression_info_to_dict(regression_info, key, lst, len(lst))
             if key == "exercise" and lst == exercise:
-                add_regression_info_to_dict(key, lst, len(lst))  
+                add_regression_info_to_dict(regression_info, key, lst, len(lst))
+
+    for key in list(next_day_regression_info.keys()):
+        for lst in next_day_plot_points:
+            if key == "sleep" and lst == sleep_points:
+                add_regression_info_to_dict(next_day_regression_info, key, lst, len(lst))
+            if key == "screen" and lst == screen_points:
+                add_regression_info_to_dict(next_day_regression_info, key, lst, len(lst))
+            if key == "exercise" and lst == exercise_points:
+                add_regression_info_to_dict(next_day_regression_info, key, lst, len(lst))              
 
     ordered_ars = determine_relevence_of_behavior(regression_info)
 
@@ -158,31 +175,54 @@ def show_user_stats():
 
     for behavior in regression_info:
         if regression_info[behavior]["adjusted_r_squared"] == ordered_ars[-1]:
-            most_relevent_activity = behavior                   
+            most_relevent_activity = behavior
+
+    biggest_next_day_impact = "behavior"
+
+    next_day_sorted_ars = determine_relevence_of_behavior(next_day_regression_info)
+
+    for behavior in next_day_regression_info:
+        if next_day_regression_info[behavior]["adjusted_r_squared"] == next_day_sorted_ars[-1]:
+            biggest_next_day_impact = behavior
+
+    next_day_insight = "stuff"
+            
+    if next_day_regression_info[biggest_next_day_impact]["slope"] < 0:
+        next_day_insight = "the less {} you get, the better you tend to feel the next day.".format(biggest_next_day_impact)
+    elif next_day_regression_info[biggest_next_day_impact]["slope"] > 0:
+        next_day_insight = "the more {} you get, the better you tend to feel the next day.".format(biggest_next_day_impact)
+
+    same_day_insight = "stuff"
+
+    if regression_info[most_relevent_activity]["slope"] < 0:
+        same_day_insight = "the less {} you get, the better you tend to feel that day.".format(most_relevent_activity)
+    elif regression_info[most_relevent_activity]["slope"] > 0:
+        same_day_insight = "the more {} you get, the better you tend to feel that day.".format(most_relevent_activity)        
+
     
-    return render_template("my_stats.html", sleep=sleep_r, screentime=screentime_r, exercise=exercise_r, name=name, independent_variables=independent_variables, regression_info=regression_info, most_relevent_activity=most_relevent_activity, ordered_ars=ordered_ars, sleep_points=sleep_points, screen_points=screen_points, exercise_points=exercise_points)             
+    return render_template("my_stats.html", sleep=sleep_r, screentime=screentime_r, exercise=exercise_r, name=name, independent_variables=independent_variables, regression_info=regression_info, most_relevent_activity=most_relevent_activity, ordered_ars=ordered_ars, sleep_points=sleep_points, screen_points=screen_points, exercise_points=exercise_points, biggest_next_day_impact=biggest_next_day_impact, next_day_insight=next_day_insight, same_day_insight=same_day_insight)             
                  
 # key refers to keys in regression_info dictionary. These keys share the same name as the lists in the
 # independent variable list, because the dictionary info is based on these lists
-def add_regression_info_to_dict(key, lst, n):
+def add_regression_info_to_dict(dictionary, key, lst, n):
     """Calculate adjusted r squared for each data set of dependent + independent variables, and add it to the data set dict."""    
 # n is the sample size
 # adjusted_r_squared formula used can be found here: http://mtweb.mtsu.edu/stats/dictionary/formula.htm   
-    regression_info[key]['n'] = len(lst)
-    r_value = regression_info[key]['r_value']
+    dictionary[key]['n'] = len(lst)
+    r_value = dictionary[key]['r_value']
 # I hardcoded k to 1 because for the first chart, each scatter plot and regression line is for 1
 # independent variable (k is supposed to be number of independent variables).    
     adjusted_r_squared = 1 - (((1 - r_value**2) * (n-1))/(n-1-1))
-    regression_info[key]['adjusted_r_squared'] = adjusted_r_squared
+    dictionary[key]['adjusted_r_squared'] = adjusted_r_squared
 
-def determine_relevence_of_behavior(dict):
+def determine_relevence_of_behavior(dictionary):
     """Pass in the dict with all the regression info and see which behaviors are most relevent to the user.
     Return print statements that provide correlative insights."""
 
     highest_influences = []
 
-    for behavior in regression_info:
-        r = regression_info[behavior]["adjusted_r_squared"]
+    for behavior in dictionary:
+        r = dictionary[behavior]["adjusted_r_squared"]
         highest_influences.append(r)
 
     return sorted(highest_influences)    
@@ -201,7 +241,19 @@ def find_next_day_effects(indep_v_list, wellness_scores):
 
     return plot_points_for_next_day_effects[0], plot_points_for_next_day_effects[1], plot_points_for_next_day_effects[2]        
 
+def create_regression_dict(lst, sublist_1, sublist_2, sublist_3):
+        for item in lst:
+            print item     
+            slope, intercept, r_value, p_value, std_err = stats.linregress(item)
+            sub_dict = {'slope': slope, 'intercept': intercept, 'r_value': r_value, 'p_value': p_value, 'std_err': std_err}
+            if item == sublist_1:
+                next_day_regression_info["sleep"] = sub_dict
+            elif lst == sublist_2:
+                next_day_regression_info["screen"] = sub_dict
+            elif lst == sublist_3:
+                next_day_regression_info["exercise"] = sub_dict 
 
+        return next_day_regression_info           
     
 
 @app.route("/record_daily_input")
@@ -240,6 +292,33 @@ def add_info():
 
     return redirect('/my_stats')
 
+@app.route("/see_all_records")
+def see_all_records():
+    if 'current_user' not in session:
+        return redirect('/')
+
+    current_user = session['current_user']
+
+    all_info = Daily_Input.query.filter_by(user_id=current_user).order_by('date').all()
+
+    all_entries = []
+
+    for entry in all_info:
+        input_dictionary = {}
+        input_dictionary['date'] = entry.date
+        input_dictionary['sleep'] = entry.sleep
+        input_dictionary['exercise'] = entry.exercise
+        input_dictionary['screentime'] = entry.screen_time
+        input_dictionary['well_being_rating'] = entry.well_being_rating
+        all_entries.append(input_dictionary)
+
+
+    length = len(all_entries)    
+
+    return render_template("all_entries.html", all_entries=all_entries, current_user=current_user, length=length)    
+    
+
+
 
 # @app.route("/check_info")
 # def check_info():  
@@ -268,8 +347,6 @@ def add_info():
 def logout():
     del session['current_user']
 
-
-    flash('Happy tracking! Tee hee!')
     return redirect ("/")    
 
 if __name__ == "__main__":

@@ -1,17 +1,39 @@
 <!doctype html>
 <html>
-<head>
+<head><!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <title></title>
 </head>
 <body>
 
-<div>
 
-{% if 'current_user' in session %}
-        <h3><a href="/my_stats">My Stats</a></h3>
-        <br><br><br>
-        <a href="/logout">Logout</a>
-{% endif %}        
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<div>
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/">Trackwell</a>
+    </div>
+    <ul class="nav navbar-nav">
+        <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">Profile
+            <span class="caret"></span></a>   
+            <ul class="dropdown-menu">
+              <li><a href="/my_stats">My Stats</a></li>
+              <li><a href="/registration_confirmation">Account Info</a></li>
+              <li><a href="/see_all_records">View All Entries</a></li>
+            </ul>
+        </li>
+        <li><a href="/record_daily_input">Add Entry</a></li>
+        <li><a href="/logout">Logout</a></li>
+    </ul>        
+
+  </div>
+</nav>      
 
 </div>
 

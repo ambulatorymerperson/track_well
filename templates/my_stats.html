@@ -1,25 +1,31 @@
-<!Doctype html>
-<html>
+{% extends "base.html" %}
 <head>
     <title></title>
 </head>
 <body>
-    <h3><a href="/record_daily_input">Add daily record</a></h3>
+{% block content %}
+
  
 <br><br>
 <h1 id="name">{{ name }}'s stats</h1><br>
 
- <p>Out of all the activities you are tracking, {{ most_relevent_activity }} is the most relevent to your sense of well-being.</p> 
+ <p>out of all the activities you are tracking, {{ most_relevent_activity }} is the most relevent to your same-day well-being.<br>{{ same_day_insight }}</p> 
 <br>
-
 <script src="http://code.highcharts.com/highcharts.js"></script>
 <script src="http://code.highcharts.com/modules/exporting.js"></script>
     <script src="//rawgithub.com/phpepe/highcharts-regression/master/highcharts-regression.js"> </script>
 
-
-<div id="chart-A" class="chart"></div> <!-- Container for Chart A -->
-<div class="spacer"></div>
-<div id="chart-B" class="chart"></div> <!-- Container for Chart B -->
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8">
+            <div id="chart-A" class="chart">
+            </div> <!-- Container for Chart A -->
+            <div class="spacer"></div><div id="text"></div>
+            <div id="next_day_insight"></div>
+            <div id="chart-B" class="chart"></div> <!-- Container for Chart B -->
+        </div>
+    </div>
+</div>            
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script>
@@ -31,6 +37,8 @@ let exercise = {{ exercise|tojson|safe }};
 let screen_points = {{ screen_points|tojson|safe }};
 let sleep_points = {{ sleep_points|tojson|safe }};
 let exercise_points = {{ exercise_points|tojson|safe }};
+let next_day_variable = {{ biggest_next_day_impact|tojson|safe }};
+let next_day_insight = {{ next_day_insight|tojson|safe }}; 
 
 
 
@@ -106,6 +114,10 @@ $(function () {
 
 
 });
+
+$('#text').html(next_day_variable);
+$('#text').append(' tends to have the biggest impact on how you feel the <strong>next</strong> day.');
+$('#next_day_insight').html(next_day_insight);
 
 
 $(function () { 
@@ -187,10 +199,7 @@ $(function () {
 
     <div>
 
-{% if 'current_user' in session %}
-        <a href="/logout">Logout</a>
-{% endif %}        
-
 </div>
+{% endblock %}
 </body>
 </html>

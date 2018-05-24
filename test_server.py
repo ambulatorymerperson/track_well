@@ -19,7 +19,14 @@ class MyAppIntegrationTestCase(unittest.TestCase):
 
     def my_stats(self):
         result = self.client.get('/my_stats')
-        self.assertIn(' <p>Out of all the activities you are tracking,', result.data)        
+        self.assertIn(' <p>Out of all the activities you are tracking,', result.data)
+
+    def test_add_info_page(self):
+        with self.client as c:
+          with c.session_transaction() as sess:
+              sess['current_user'] = "Leroy"
+        result = self.client.get('/record_daily_input')
+        self.assertIn('Record what you did and how you felt yesterday', result.data)                
 
 
 class WellnessTrackerTestsDatabase(unittest.TestCase):
@@ -57,8 +64,20 @@ class WellnessTrackerTestsDatabase(unittest.TestCase):
                               data={"email_input": "Heroy",
                                     "pw_input": "cheese"},
                               follow_redirects=True)
-        self.assertIn('That email is not in our database. Please check your spelling, or use the form below to register', result.data) 
+        self.assertIn('That email is not in our database. Please check your spelling, or use the form below to register', result.data)
 
+    def test_registration(self):
+        result = self.client.post('/register', data={'email_input':'letter@alphabet.words', 'pw_input':'scrtvwls', 'name':'Tony'},
+                                    follow_redirects=True)
+        self.assertIn('We have your email as letter@alphabet.words', result.data)                                 
+
+
+    def test_registration_confirmation(self):
+        with self.client as c:
+          with c.session_transaction() as sess:
+              sess['current_user'] = "Leroy"
+        result = self.client.get('/registration_confirmation')
+        self.assertIn('Welcome, Brown!', result.data)    
 
 
     def test_rsquared(self):
