@@ -312,10 +312,13 @@ def see_all_records():
         input_dictionary['well_being_rating'] = entry.well_being_rating
         all_entries.append(input_dictionary)
 
+    last_30_days = []
+    for i in range(31):
+        last_30_days.append(date.today() - timedelta(i))
 
     length = len(all_entries)    
 
-    return render_template("all_entries.html", all_entries=all_entries, current_user=current_user, length=length)    
+    return render_template("all_entries.html", all_entries=all_entries, current_user=current_user, length=length, last_30_days=last_30_days)    
     
 
 
