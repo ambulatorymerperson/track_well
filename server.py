@@ -2,7 +2,7 @@ from statistical_functions import calculate_coefficient_of_determination
 
 from jinja2 import StrictUndefined
 
-from math import sqrt
+from math import (sqrt, modf)
 from scipy import stats
 import numpy as np
 
@@ -306,9 +306,9 @@ def see_all_records():
     for entry in all_info:
         input_dictionary = {}
         input_dictionary['date'] = entry.date
-        input_dictionary['sleep'] = entry.sleep
-        input_dictionary['exercise'] = entry.exercise
-        input_dictionary['screentime'] = entry.screen_time
+        input_dictionary['sleep'] = "{} hours {} minutes".format(hours_and_minutes(entry.sleep)[0], hours_and_minutes(entry.sleep)[1])
+        input_dictionary['exercise'] = "{} hours {} minutes".format(hours_and_minutes(entry.exercise)[0], hours_and_minutes(entry.exercise)[1])
+        input_dictionary['screentime'] = "{} hours {} minutes".format(hours_and_minutes(entry.screen_time)[0], hours_and_minutes(entry.screen_time)[1])
         input_dictionary['well_being_rating'] = entry.well_being_rating
         all_entries.append(input_dictionary)
 
@@ -320,6 +320,13 @@ def see_all_records():
 
     return render_template("all_entries.html", all_entries=all_entries, current_user=current_user, length=length, last_30_days=last_30_days)    
     
+def hours_and_minutes(x):
+
+    minutes, hours = modf(x)
+
+    minutes *= 60
+
+    return int(hours), int(minutes)
 
 
 
