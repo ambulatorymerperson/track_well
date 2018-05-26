@@ -199,8 +199,9 @@ def show_user_stats():
     elif regression_info[most_relevent_activity]["slope"] > 0:
         same_day_insight = "the more {} you get, the better you tend to feel that day.".format(most_relevent_activity)        
 
+    same_day_message = "Out of all the activities you are tracking, {} is the most relevent to your sense of well-being that day. {}".format(most_relevent_activity, same_day_insight)    
     
-    return render_template("my_stats.html", sleep=sleep_r, screentime=screentime_r, exercise=exercise_r, name=name, independent_variables=independent_variables, regression_info=regression_info, most_relevent_activity=most_relevent_activity, ordered_ars=ordered_ars, sleep_points=sleep_points, screen_points=screen_points, exercise_points=exercise_points, biggest_next_day_impact=biggest_next_day_impact, next_day_insight=next_day_insight, same_day_insight=same_day_insight)             
+    return render_template("my_stats.html", sleep=sleep_r, screentime=screentime_r, exercise=exercise_r, name=name, independent_variables=independent_variables, regression_info=regression_info, ordered_ars=ordered_ars, sleep_points=sleep_points, screen_points=screen_points, exercise_points=exercise_points, biggest_next_day_impact=biggest_next_day_impact, next_day_insight=next_day_insight, same_day_message=same_day_message)             
                  
 # key refers to keys in regression_info dictionary. These keys share the same name as the lists in the
 # independent variable list, because the dictionary info is based on these lists
