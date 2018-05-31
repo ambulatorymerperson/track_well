@@ -13,8 +13,10 @@
         <h2>login</h2>
         <form action="/login" method="POST"><br>
             E-mail: <input type=textbox name="email_input" required></input><br>
+        
             Password: <input type="password" name="pw_input" required></input>
             <br><input type=submit>
+
 
         </form>
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -31,14 +33,22 @@
         Don't have an account?<br><br>
         Fill out the form below to register<br>
 
+        
+
         <form action="/register" method="POST"><br>
-            E-mail: <input type=textbox name="email_input"></input><br>
-            Password: <input type=textbox name="pw_input"></input>
+            E-mail: <input type=textbox name="email_input" id="email"></input>  
             <br>
-            Name: <input type=textbox name="name"></input><br>
+            Password: <input type=textbox name="pw_input" id="pw"></input>  
+            <br>
+            Name: <input type=textbox name="name" id="name"></input> 
+            <br>
+
             <input type=submit>
 
         </form>
+
+        <text id="countdown_feedback"></textarea>
+
     {% else %}
         <a href="/my_stats"> View My Stats </a><br>
         <a href="/record_daily_input"> Add Data </a><br>
@@ -48,5 +58,66 @@
 
 
 </div>
+
+<script src="https://code.jQuery.com/jQuery-3.2.1.min.js"></script>
+<script>
+"use strict";
+
+$("#email").keyup(function(){
+  $("#countdown_feedback").text("Characters left: " + (30 - $(this).val().length));
+});
+
+
+$('#email').on('keyup keydown', function(e){
+    console.log($(this).val().length > 29)
+        if ($(this).val().length > 29 
+            && e.keyCode != 46
+            && e.keyCode != 8
+           ) {
+           e.preventDefault();     
+           $(this).val().slice(0,29);
+        }
+    });
+
+
+$("#pw").keyup(function(){
+  $("#countdown_feedback").text("Characters left: " + (15 - $(this).val().length));
+});
+
+$('#pw').on('keyup keydown', function(e){
+    console.log($(this).val().length > 14)
+        if ($(this).val().length > 14 
+            && e.keyCode != 46
+            && e.keyCode != 8
+           ) {
+           e.preventDefault();     
+           $(this).val().slice(0,14);
+        }
+    });
+
+$("#name").keyup(function(){
+  $("#countdown_feedback").text("Characters left: " + (15 - $(this).val().length));
+});
+
+$('#name').on('keyup keydown', function(e){
+    console.log($(this).val().length > 14)
+        if ($(this).val().length > 14 
+            && e.keyCode != 46
+            && e.keyCode != 8
+           ) {
+           e.preventDefault();     
+           $(this).val().slice(0,14);
+        }
+    });
+
+
+
+
+
+
+
+
+</script>
+
 </body>
 </html>
