@@ -337,7 +337,7 @@ def change_records():
     new_day_log = Daily_Input(date=date, user_id=current_user, sleep=sleep_t, exercise=exercise_t, screen_time=screentime_t, well_being_rating=wellness_score)
     db.session.add(new_day_log)
     db.session.commit()
-
+    flash('entry successfully changed!')
     return redirect('/see_all_records')
 
 @app.route("/see_all_records")
@@ -346,6 +346,9 @@ def see_all_records():
         return redirect('/')
 
     current_user = session['current_user']
+
+    user = User.query.filter(User.ID == current_user).one()
+    name = user.name
 
     all_info = Daily_Input.query.filter_by(user_id=current_user).order_by('date').all()
 
@@ -366,7 +369,7 @@ def see_all_records():
 
     length = len(all_entries)    
 
-    return render_template("all_entries.html", all_entries=all_entries, current_user=current_user, length=length, last_30_days=last_30_days)    
+    return render_template("all_entries.html", all_entries=all_entries, current_user=current_user, length=length, last_30_days=last_30_days, name=name)    
     
 def hours_and_minutes(x):
 
