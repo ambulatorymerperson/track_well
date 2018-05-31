@@ -266,6 +266,7 @@ def record_input():
 
     return render_template("record_daily_input.html")
 
+
 @app.route("/add_info", methods=["POST"])    
 def add_info():
 
@@ -292,6 +293,52 @@ def add_info():
     db.session.commit()
 
     return redirect('/my_stats')
+
+@app.route("/change_row_in_daily_inputs", methods=["POST"])
+def change_records():
+
+
+    current_user = session['current_user']
+
+    date = request.form.get('date') 
+    sleep_h = request.form.get('sleep_hours')
+    sleep_m = request.form.get('sleep_minutes')
+    exercise_h = request.form.get('exercise_hours')
+    exercise_m = request.form.get('exercise_minutes')
+    screentime_h = request.form.get('screentime_hours')
+    screentime_m = request.form.get('screentime_minutes')
+    wellness_score = request.form.get('wellness_score')
+    entry_number = request.form.get('change_entry_number')
+
+    print "\n\n\n"
+    print date
+    print "\n\n\n"
+    print sleep_h
+    print "\n\n\n"
+    print sleep_m
+    print "\n\n\n"
+    print entry_number
+    print "\n\n\n\n\n\n"
+
+    entry_number = int(entry_number) - 1
+    all_info = Daily_Input.query.filter_by(user_id=current_user).order_by('date').all()
+    entry_to_change = all_info[entry_number]
+    print entry_to_change
+    db.session.delete(entry_to_change)
+    db.session.commit()
+    # wrong_entry = entry_to_change.input_id
+    # deletion = daily_inputs.delete(daily_inputs.input_id == wrong_entry)
+    # deletion.execute()
+
+    sleep_t = round((float(sleep_m)/60.0) + float(sleep_h), 2)
+    exercise_t = round((float(exercise_m)/60.0) + float(exercise_h), 2)
+    screentime_t = round((float(screentime_m)/60.0) + float(screentime_h), 2)
+
+    new_day_log = Daily_Input(date=date, user_id=current_user, sleep=sleep_t, exercise=exercise_t, screen_time=screentime_t, well_being_rating=wellness_score)
+    db.session.add(new_day_log)
+    db.session.commit()
+
+    return redirect('/see_all_records')
 
 @app.route("/see_all_records")
 def see_all_records():
