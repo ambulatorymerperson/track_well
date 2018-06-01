@@ -1,3 +1,5 @@
+
+
 <html>
 <head>    
   
@@ -73,8 +75,20 @@
 </style>
 
 </head>
+
+<div>
+
 <body>
-<h1> {{ session['current_user'] }} Record what you did and how you felt yesterday.</h1>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class=flashes>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}    
+<h1> {{ name }} Record what you did and how you felt yesterday.</h1>
 <!-- <h3>Behaviors and feelings for</h3><p id="date"></p> -->
 <br><br><br>
 <!-- <form action="/check_info" id="daily_log"> -->
@@ -320,6 +334,7 @@ $("#choose_date").html(yesterday);
 // daily_log.addEventListener('submit', confirmSubmission);
 
 
-// </script>   
+// </script> 
+
 </body>
 </html>               

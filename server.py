@@ -44,10 +44,11 @@ def register_process():
     pw_input = request.form['pw_input']
     name = request.form['name']
 
-    if User.query.filter_by(ID = email_input).all() != []:
+    if User.query.filter_by(ID == email_input).all() != []:
+        flash('That email is already attached to an account.')
         return redirect('/')       
     else:
-        new_user = User(ID= email_input, password=pw_input, name=name)
+        new_user = User(ID = email_input, password=pw_input, name=name)
         db.session.add(new_user)
         db.session.commit()
         session['current_user'] = email_input 
@@ -88,10 +89,16 @@ def login():
 def show_user_stats():
 
     if 'current_user' not in session:
+        flash('Please log in first')
         return redirect('/')
 
     current_user = session['current_user']
     user_stats = Daily_Input.query.filter_by(user_id=current_user).order_by('date').all()
+
+    if len(user_stats) < 1:
+        flash('You have not entered any data yet. Please enter data in order to view behavioral graphs.')
+        return redirect("/record_daily_input")
+
     user = User.query.filter(User.ID == current_user).one()
     name = user.name
     sleep = []
@@ -263,14 +270,25 @@ def record_input():
     if 'current_user' not in session:
         return redirect('/')
 
+    current_user = session['current_user']
+    user = User.query.filter(User.ID == current_user).one()
+    name = user.name
 
-    return render_template("record_daily_input.html")
+
+
+
+    return render_template("record_daily_input.html", name=name)
 
 
 @app.route("/add_info", methods=["POST"])    
 def add_info():
 
     current_user = session['current_user']
+
+    yesterday = date.today() - timedelta(1)
+    if Daily_Input.query.filter(Daily_Input.date==yesterday, Daily_Input.user_id == current_user).all() != []:
+        flash('Sorry, you have already entered information for this day. If you believe this information was entered incorrectly, you can change it below.')
+        return redirect('/see_all_records')
 
     sleep_h = request.form.get('sleep_h')
     sleep_m = request.form.get('sleep_m')
@@ -279,7 +297,8 @@ def add_info():
     screentime_h = request.form.get('screentime_h')
     screentime_m = request.form.get('screentime_m')
     wellness_score = request.form.get('wellness_score')
-    yesterday = date.today() - timedelta(1)
+    
+
 
 
     sleep_t = round((float(sleep_m)/60.0) + float(sleep_h), 2)
