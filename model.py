@@ -53,6 +53,16 @@ class User(db.Model):
     def __repr__(self):
         return "<User_id: {} Password: {} Name: {} Started tracking on:{}>\n".format(self.ID, self.password, self.name, self.first_entry_at)
 
+class Custom_Variable_Daily_Entry(db.Model):
+    """ A table for keeping track of each entries for user-generated custom variables """
+
+    __tablename__ = "custom_variable_dailies"
+
+    input_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    daily_default_v_input_id = db.Column(db.Integer, db.ForeignKey('daily_inputs.input_id'), nullable=False)
+    custom_variable_amount = db.Column(db.Integer, nullable=True)
+        
+
 
 ##############################################################################
 def example_data():
