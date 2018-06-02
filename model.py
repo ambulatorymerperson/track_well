@@ -59,9 +59,25 @@ class Custom_Variable_Daily_Entry(db.Model):
     __tablename__ = "custom_variable_dailies"
 
     input_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    variable_info = db.Column(db.Integer, db.ForeignKey('custom_variable_info.variable_id'), nullable=False)
     daily_default_v_input_id = db.Column(db.Integer, db.ForeignKey('daily_inputs.input_id'), nullable=False)
-    custom_variable_amount = db.Column(db.Integer, nullable=True)
-        
+    custom_variable_amount = db.Column(db.Float, nullable=True)
+
+    def __repr__(self):
+        return "<Input id: {} Variable Info: {} Default Variable Input ID: {} Custom Variable Ammount:{}>\n".format(self.input_id, self.variable_info, self.daily_default_v_input_id, self.custom_variable_amount)
+
+class Custom_Variable_Info(db.Model):
+    """ A table that holds all the information for custom independnet variables designed by users """
+
+    __tablename__ = "custom_variable_info"
+
+    variable_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    user_id = db.Column(db.String(15), db.ForeignKey('users.ID'), nullable=False)
+    variable_name = db.Column(db.String(20), nullable=False)
+    variable_units = db.Column(db.String(10), nullable=False)
+
+    def __repr__(self):
+        return "<Variable id: {} User id: {} Variable name: {} Variable units:{}>\n".format(self.variable_id, self.user_id, self.variable_name, self.variable_units)
 
 
 ##############################################################################

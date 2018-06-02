@@ -15,7 +15,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 
 from datetime import date, timedelta
 
-from model import User, Daily_Input, connect_to_db, db
+from model import User, Daily_Input, Custom_Variable_Daily_Entry, Custom_Variable_Info, connect_to_db, db
 
 
 app = Flask(__name__)
@@ -274,10 +274,17 @@ def record_input():
     user = User.query.filter(User.ID == current_user).one()
     name = user.name
 
+    user_custom_variables = Custom_Variable_Info.query.filter(Custom_Variable_Info.user_id==current_user).all()
+
+    custom_variable_dict = {}
+
+    for i in range(len(user_custom_variables)):
+        custom_variable_dict["variable "+str(i+1)] = {}
+        custom_variable_dict["variable "+str(i+1)]["name"] = user_custom_variables[i].variable_name
+        custom_variable_dict["variable "+str(i+1)]["unit"] = user_custom_variables[i].variable_units
 
 
-
-    return render_template("record_daily_input.html", name=name)
+    return render_template("record_daily_input.html", name=name, custom_variable_dict=custom_variable_dict)
 
 
 @app.route("/add_info", methods=["POST"])    
@@ -399,7 +406,26 @@ def hours_and_minutes(x):
     return int(hours), int(minutes)
 
 
+@app.route("/create_custom_variable")
+def create_custom_variable():
 
+    current_user = session['current_user']
+    user = User.query.filter(User.ID == current_user).one()
+    name = user.name
+
+    return render_template("create_custom_variable.html", name=name)
+
+
+@app.route("/add_new_variable", methods=["POST"])
+def add_new_variable():
+    variable_name = request.form.get('variable_name')
+    unit_type = request.form.get('unit_type')
+    current_user = session['current_user']
+    new_custom_variable = Custom_Variable_Info(user_id=current_user, variable_name=variable_name, variable_units=unit_type)
+    db.session.add(new_custom_variable)
+    db.session.commit()
+
+    return redirect('/see_all_records')
 # @app.route("/check_info")
 # def check_info():  
 #     current_user = session['current_user']

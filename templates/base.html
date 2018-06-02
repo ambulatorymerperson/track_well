@@ -16,7 +16,12 @@
 <nav class="navbar navbar-default">
   <div class="container-fluid">
     <div class="navbar-header">
-      <a class="navbar-brand" href="/">Trackwell</a>
+      <a class="navbar-brand" href="/"> {% if 'current_user' not in session %}
+                                            Trackwell
+                                        {% elif 'current_user' in session %}
+                                            {{ name }}'s Trackwell
+                                        {% endif %}    
+                                        </a>
     </div>
     <ul class="nav navbar-nav">
         <li class="dropdown">
@@ -26,6 +31,7 @@
               <li><a href="/my_stats">My Stats</a></li>
               <li><a href="/registration_confirmation">Account Info</a></li>
               <li><a href="/see_all_records">View All Entries</a></li>
+              <li><a href="/create_custom_variable">Make A New Variable</a></li>
             </ul>
         </li>
         <li><a href="/record_daily_input">Add Entry</a></li>
