@@ -1,9 +1,9 @@
-
-
-<html>
-<head>    
-  
-    <title>record info</title>
+{% extends "base.html" %}
+<head>
+<title></title>
+</head>
+<body>
+{% block content %}  
 <style>
 .tooltip {
     position: relative;
@@ -234,7 +234,17 @@ What was your screentime yesterday?
         <option value="57">57 minutes</option>
         <option value="58">58 minutes</option>
         <option value="59">59 minutes</option>
-    </select>
+    </select><br><br>
+    {% if size > 0 %}
+        {% for i in custom_variable_dict.keys() %}
+            {% if custom_variable_dict[i]["unit"] != "Yes/No" %}
+                How much {{custom_variable_dict[i]["name"]}} did you get yesterday?
+            {% else %}     
+                Did you {{custom_variable_dict[i]["name"]}} yesterday?
+            {% endif %}    
+            <input type='number' name="{{custom_variable_dict[i]["name"]}}" style="width: 34px;"> {{custom_variable_dict[i]["unit"]}}<br><br>
+         {% endfor %}   
+    {% endif %}
 <br><br>
 Rate your sense of well-being yesterday on a scale from 1-5
     <select name="wellness_score">
@@ -260,6 +270,7 @@ Submit data for yesterday:
 <br><input type=submit id="submit_data">
 </form>
 <br><br><br>
+
 {{ custom_variable_dict }}
 
 <!-- <div id="myModal" class="modal">
@@ -337,5 +348,7 @@ $("#choose_date").html(yesterday);
 
 // </script> 
 
+{% endblock %}
 </body>
-</html>               
+
+</html>                

@@ -27,6 +27,8 @@ regression_info = {}
 
 next_day_regression_info = {}
 
+custom_variable_dict = {}
+
 @app.route('/')
 def show_homepage():
     """show home page"""
@@ -276,15 +278,15 @@ def record_input():
 
     user_custom_variables = Custom_Variable_Info.query.filter(Custom_Variable_Info.user_id==current_user).all()
 
-    custom_variable_dict = {}
 
     for i in range(len(user_custom_variables)):
         custom_variable_dict["variable "+str(i+1)] = {}
         custom_variable_dict["variable "+str(i+1)]["name"] = user_custom_variables[i].variable_name
         custom_variable_dict["variable "+str(i+1)]["unit"] = user_custom_variables[i].variable_units
 
+    size = len(custom_variable_dict)    
 
-    return render_template("record_daily_input.html", name=name, custom_variable_dict=custom_variable_dict)
+    return render_template("record_daily_input.html", name=name, custom_variable_dict=custom_variable_dict, size=size)
 
 
 @app.route("/add_info", methods=["POST"])    
@@ -304,8 +306,14 @@ def add_info():
     screentime_h = request.form.get('screentime_h')
     screentime_m = request.form.get('screentime_m')
     wellness_score = request.form.get('wellness_score')
-    
 
+    query = 
+    
+    for i in custom_variable_dict.keys():
+        name = custom_variable_dict[i]["name"]
+        variable_info = Custom_Variable_Info.query.filter(Custom_Variable_Info.user_id==current_user, Custom_Variable_Info.variable_name==name)
+        amount = resuest.form.get(name)
+        new_custom_entry = Custom_Variable_Daily_Entry(variable_info=variable_info.variable_id, )
 
 
     sleep_t = round((float(sleep_m)/60.0) + float(sleep_h), 2)
