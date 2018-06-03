@@ -29,6 +29,8 @@ next_day_regression_info = {}
 
 custom_variable_dict = {}
 
+
+
 @app.route('/')
 def show_homepage():
     """show home page"""
@@ -273,6 +275,15 @@ def record_input():
         return redirect('/')
 
     current_user = session['current_user']
+    
+    get_users_custom_v_info(current_user)    
+
+    size = len(custom_variable_dict)    
+
+    return render_template("record_daily_input.html", name=name, custom_variable_dict=custom_variable_dict, size=size)
+
+def get_users_custom_v_info(current_user):
+
     user = User.query.filter(User.ID == current_user).one()
     name = user.name
 
@@ -283,10 +294,6 @@ def record_input():
         custom_variable_dict["variable "+str(i+1)] = {}
         custom_variable_dict["variable "+str(i+1)]["name"] = user_custom_variables[i].variable_name
         custom_variable_dict["variable "+str(i+1)]["unit"] = user_custom_variables[i].variable_units
-
-    size = len(custom_variable_dict)    
-
-    return render_template("record_daily_input.html", name=name, custom_variable_dict=custom_variable_dict, size=size)
 
 
 @app.route("/add_info", methods=["POST"])    
@@ -307,14 +314,6 @@ def add_info():
     screentime_m = request.form.get('screentime_m')
     wellness_score = request.form.get('wellness_score')
 
-    query = 
-    
-    for i in custom_variable_dict.keys():
-        name = custom_variable_dict[i]["name"]
-        variable_info = Custom_Variable_Info.query.filter(Custom_Variable_Info.user_id==current_user, Custom_Variable_Info.variable_name==name)
-        amount = resuest.form.get(name)
-        new_custom_entry = Custom_Variable_Daily_Entry(variable_info=variable_info.variable_id, )
-
 
     sleep_t = round((float(sleep_m)/60.0) + float(sleep_h), 2)
     exercise_t = round((float(exercise_m)/60.0) + float(exercise_h), 2)
@@ -325,6 +324,19 @@ def add_info():
     new_day_log = Daily_Input(date=yesterday, user_id=current_user, sleep=sleep_t, exercise=exercise_t, screen_time=screentime_t, well_being_rating=wellness_score)
     db.session.add(new_day_log)
     db.session.commit()
+
+    #gets the entry we just made
+    default_v_entry = Daily_Input.query.filter(Daily_Input.date==yesterday, Daily_Input.user_id == current_user).one()
+    #gets the input id so we can use it as the foreign key for the entry below
+    default_fk = default_v_entry.input_id
+
+    for i in custom_variable_dict.keys():
+        name = custom_variable_dict[i]["name"]
+        variable_info = Custom_Variable_Info.query.filter(Custom_Variable_Info.user_id==current_user, Custom_Variable_Info.variable_name==name).one()
+        amount = request.form.get(name)
+        new_custom_entry = Custom_Variable_Daily_Entry(variable_info=variable_info.variable_id, daily_default_v_input_id=default_fk, custom_variable_amount=amount)
+        db.session.add(new_custom_entry)
+        db.session.commit()
 
     return redirect('/my_stats')
 
@@ -356,6 +368,9 @@ def change_records():
 
     entry_number = int(entry_number) - 1
     all_info = Daily_Input.query.filter_by(user_id=current_user).order_by('date').all()
+    for i in range(len(all_info)):
+        print i 
+        print all_info[i]
     entry_to_change = all_info[entry_number]
     print entry_to_change
     db.session.delete(entry_to_change)
@@ -401,9 +416,11 @@ def see_all_records():
     for i in range(31):
         last_30_days.append(date.today() - timedelta(i))
 
-    length = len(all_entries)    
+    length = len(all_entries)
+    get_users_custom_v_info(current_user) 
+    size = len(custom_variable_dict)    
 
-    return render_template("all_entries.html", all_entries=all_entries, current_user=current_user, length=length, last_30_days=last_30_days, name=name)    
+    return render_template("all_entries.html", all_entries=all_entries, current_user=current_user, length=length, last_30_days=last_30_days, name=name, custom_variable_dict=custom_variable_dict, size=size)    
     
 def hours_and_minutes(x):
 
