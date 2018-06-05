@@ -281,10 +281,10 @@ def get_users_custom_v_info(current_user):
     custom_variables = {}
 
     for i in range(len(user_custom_variables)):
-        custom_variables[user_custom_variables[i].variable_name + "variable"] = {}
-        custom_variables[user_custom_variables[i].variable_name + "variable"]["name"] = user_custom_variables[i].variable_name
-        custom_variables[user_custom_variables[i].variable_name + "variable"]["unit"] = user_custom_variables[i].variable_units
-        
+        custom_variables[str(user_custom_variables[i].variable_name).rstrip()] = {}
+        custom_variables[str(user_custom_variables[i].variable_name).rstrip()]["name"] = str(user_custom_variables[i].variable_name).rstrip()
+        custom_variables[str(user_custom_variables[i].variable_name).rstrip()]["unit"] = str(user_custom_variables[i].variable_units).rstrip()
+   
     return custom_variables    
 
 @app.route("/add_info", methods=["POST"])    
@@ -398,25 +398,6 @@ def see_all_records():
     all_info = Daily_Input.query.filter(Daily_Input.user_id==current_user).order_by(Daily_Input.date.desc()).all()
 
 
-    matching_entries = {}
-    for entry in all_info:
-        default_entry = "{}-{}-{}".format(entry.date.month, entry.date.day, entry.date.year)
-        matching_entries[default_entry] = {}
-        query = Custom_Variable_Daily_Entry.query.filter(Custom_Variable_Daily_Entry.daily_default_v_input_id==entry.input_id).all()
-        if query:
-            print query 
-        for i in query:
-            custom_v = Custom_Variable_Info.query.filter(Custom_Variable_Info.variable_id==i.variable_info).one()
-            name = custom_v.variable_name
-            units = custom_v.variable_units
-            matching_entries[default_entry][name] = {}
-            matching_entries[default_entry][name]['name'] = name 
-            matching_entries[default_entry][name]['units'] = units 
-            matching_entries[default_entry][name]['amount'] = i.custom_variable_amount
-            print matching_entries[default_entry][name]
-
-       
-
     all_entries = []
     for entry in all_info:
         input_dictionary = {}
@@ -427,8 +408,9 @@ def see_all_records():
         input_dictionary['well_being_rating'] = entry.well_being_rating
         all_entries.append(input_dictionary)
 
-
-          
+    custom_variables = get_users_custom_v_info(current_user)
+        
+    matching_entries = create_matching_entries_dict(all_info, custom_variables)      
 
     last_30_days = []
     for i in range(31):
@@ -436,12 +418,70 @@ def see_all_records():
 
     length = len(all_entries)
 
-    custom_variables = get_users_custom_v_info(current_user) 
+     
    
 
     question = len(matching_entries)
     how_many_customs = len(custom_variables)
     return render_template("all_entries.html", question=question, all_entries=all_entries, current_user=current_user, length=length, last_30_days=last_30_days, name=name, custom_variables=custom_variables, matching_entries=matching_entries, how_many_customs=how_many_customs)    
+
+def create_matching_entries_dict(all_info, custom_variables):
+    matching_entries = {}
+    for entry in all_info:
+        default_entry = "{}-{}-{}".format(entry.date.month, entry.date.day, entry.date.year)
+        matching_entries[default_entry] = {}
+
+    for date in matching_entries:
+        matching_entries[date]['name'] = None
+        matching_entries[date]['unit'] = None 
+
+    query = Custom_Variable_Daily_Entry.query.filter(Custom_Variable_Daily_Entry.daily_default_v_input_id==entry.input_id).all()
+    
+    if query:
+        print query 
+
+    for i in query:
+        print i
+        print i  
+        custom_v = Custom_Variable_Info.query.filter(Custom_Variable_Info.variable_id==i.variable_info).one()
+        print "query \n"
+        print custom_v
+        name = str(custom_v.variable_name)
+        units = str(custom_v.variable_units)
+        matching_entries[default_entry][name] = {}
+        matching_entries[default_entry][name]['name'] = name 
+        matching_entries[default_entry][name]['unit'] = units 
+        matching_entries[default_entry][name]['amount'] = str(i.custom_variable_amount)
+
+    print "\ncustom_variables dict\n"
+    print custom_variables
+    print "\nmatching entries dictionary\n"
+    print matching_entries
+    print "\n\n"
+
+
+
+    # for improvement
+
+    print  custom_variables
+        
+    for item in custom_variables.keys():
+        custom_v = Custom_Variable_Info.query.filter(Custom_Variable_Info.variable_id==i.variable_info).one()
+        name = custom_v.variable_name
+        print "\ncustom variable lookup"
+        print custom_variables[item]['name']
+        print "\ncustom variable lookup"
+        print custom_variables[item]['unit']
+        print "\n.get"
+        print matching_entries[default_entry][item].get('name', 0)
+        matching_entries[default_entry][item]['name'] = matching_entries[default_entry][item].get('name', custom_variables[item]['name'])
+        matching_entries[default_entry][item]['unit'] = matching_entries[default_entry][item].get('unit', custom_variables[item]['unit'])
+        matching_entries[default_entry][item]['amount'] = i.custom_variable_amount
+        print "\nmatching entries lookup\n"
+        print matching_entries[default_entry][name] 
+        print "\n\n"   
+
+    return matching_entries        
     
 def hours_and_minutes(x):
 
@@ -466,6 +506,7 @@ def create_custom_variable():
 def add_new_variable():
     variable_name = request.form.get('variable_name')
     variable_name = str(variable_name)
+    variable_name = variable_name.rstrip()
     print len(variable_name)
     unit_type = request.form.get('unit_type')
     current_user = session['current_user']
