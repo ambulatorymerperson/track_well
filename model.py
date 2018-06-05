@@ -27,7 +27,7 @@ class Daily_Input(db.Model):
     __tablename__ = "daily_inputs"
 
     input_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    date = db.Column(db.DateTime, nullable=False)
+    date = db.Column(db.DateTime(15), nullable=False)
     user_id = db.Column(db.String(30), db.ForeignKey('users.ID'), nullable=False)
     sleep = db.Column(db.Float, nullable=False)
     exercise = db.Column(db.Float, nullable=False)
@@ -35,7 +35,7 @@ class Daily_Input(db.Model):
     well_being_rating = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
-        return "<Date: {} user_id: {} sleep: {} exercise: {} screen time: {} well_being_rating: {}>".format(self.date, self.user_id, self.sleep, self.exercise, self.screen_time, self.well_being_rating)
+        return "<Input ID: {} Date: {} user_id: {} sleep: {} exercise: {} screen time: {} well_being_rating: {}>".format(self.input_id, self.date, self.user_id, self.sleep, self.exercise, self.screen_time, self.well_being_rating)
 
 
 class User(db.Model):
@@ -47,7 +47,7 @@ class User(db.Model):
     ID = db.Column(db.String(30), primary_key=True, nullable=False)
     password = db.Column(db.String(15), nullable=False)
     name = db.Column(db.String(15), nullable=False)
-    first_entry_at = db.Column(db.DateTime, nullable=True)
+    first_entry_at = db.Column(db.DateTime(15), nullable=True)
 
 
     def __repr__(self):
@@ -64,7 +64,7 @@ class Custom_Variable_Daily_Entry(db.Model):
     custom_variable_amount = db.Column(db.Float, nullable=True)
 
     def __repr__(self):
-        return "<Input id: {} Variable Info: {} Default Variable Input ID: {} Custom Variable Ammount:{}>\n".format(self.input_id, self.variable_info, self.daily_default_v_input_id, self.custom_variable_amount)
+        return "<Input id: {} Variable Info: {} Default Variable Input ID: {} Custom Variable Amount:{}>\n".format(self.input_id, self.variable_info, self.daily_default_v_input_id, self.custom_variable_amount)
 
 class Custom_Variable_Info(db.Model):
     """ A table that holds all the information for custom independnet variables designed by users """

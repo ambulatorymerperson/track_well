@@ -27,7 +27,7 @@ regression_info = {}
 
 next_day_regression_info = {}
 
-custom_variable_dict = {}
+custom_variables = []
 
 
 
@@ -97,7 +97,7 @@ def show_user_stats():
         return redirect('/')
 
     current_user = session['current_user']
-    user_stats = Daily_Input.query.filter_by(user_id=current_user).order_by('date').all()
+    user_stats = Daily_Input.query.filter_by(user_id=current_user).order_by(date).all()
 
     if len(user_stats) < 1:
         flash('You have not entered any data yet. Please enter data in order to view behavioral graphs.')
@@ -138,18 +138,6 @@ def show_user_stats():
         for i in range(len(independent_variables[j])) and range(len(well_being_rating)):
             regression_lines[j].append([independent_variables[j][i], well_being_rating[i]])
 
-    # for i in range(len(sleep)) and range(len(well_being_rating)):
-    #     sleep_r.append([sleep[i], well_being_rating[i]])
-
-    # for i in range(len(screentime)) and range(len(well_being_rating)):
-    #     screentime_r.append([screentime[i], well_being_rating[i]])
-
-    # for i in range(len(exercise)) and range(len(well_being_rating)):
-    #     exercise_r.append([exercise[i], well_being_rating[i]])
-
-    
-
-    
 
     for lst in independent_variables:    
         slope, intercept, r_value, p_value, std_err = stats.linregress(lst, well_being_rating)
@@ -275,12 +263,14 @@ def record_input():
         return redirect('/')
 
     current_user = session['current_user']
+    user = User.query.filter(User.ID == current_user).one()
+    name = user.name
     
     get_users_custom_v_info(current_user)    
 
-    size = len(custom_variable_dict)    
+    size = len(custom_variables)    
 
-    return render_template("record_daily_input.html", name=name, custom_variable_dict=custom_variable_dict, size=size)
+    return render_template("record_daily_input.html", name=name, custom_variables=custom_variables, size=size)
 
 def get_users_custom_v_info(current_user):
 
@@ -291,9 +281,16 @@ def get_users_custom_v_info(current_user):
 
 
     for i in range(len(user_custom_variables)):
-        custom_variable_dict["variable "+str(i+1)] = {}
-        custom_variable_dict["variable "+str(i+1)]["name"] = user_custom_variables[i].variable_name
-        custom_variable_dict["variable "+str(i+1)]["unit"] = user_custom_variables[i].variable_units
+        new_dict = {}
+        new_dict["name"] = user_custom_variables[i].variable_name
+        print "CONSTRUCTING DICTIONARY"
+        print "CONSTRUCTING DICTIONARY"
+        print "CONSTRUCTING DICTIONARY"
+        print user_custom_variables[i].variable_name
+        print "CONSTRUCTING DICTIONARY"
+        print "CONSTRUCTING DICTIONARY"
+        new_dict["unit"] = user_custom_variables[i].variable_units
+        custom_variables.append(new_dict)
 
 
 @app.route("/add_info", methods=["POST"])    
@@ -314,7 +311,6 @@ def add_info():
     screentime_m = request.form.get('screentime_m')
     wellness_score = request.form.get('wellness_score')
 
-
     sleep_t = round((float(sleep_m)/60.0) + float(sleep_h), 2)
     exercise_t = round((float(exercise_m)/60.0) + float(exercise_h), 2)
     screentime_t = round((float(screentime_m)/60.0) + float(screentime_h), 2)
@@ -326,15 +322,19 @@ def add_info():
     db.session.commit()
 
     #gets the entry we just made
-    default_v_entry = Daily_Input.query.filter(Daily_Input.date==yesterday, Daily_Input.user_id == current_user).one()
+    default_v_entry = Daily_Input.query.filter(Daily_Input.date==date, Daily_Input.user_id == current_user).one()
     #gets the input id so we can use it as the foreign key for the entry below
     default_fk = default_v_entry.input_id
 
-    for i in custom_variable_dict.keys():
-        name = custom_variable_dict[i]["name"]
+    for i in custom_variables:
+        name = i["name"]
+        print name
         variable_info = Custom_Variable_Info.query.filter(Custom_Variable_Info.user_id==current_user, Custom_Variable_Info.variable_name==name).one()
+        print variable_info
         amount = request.form.get(name)
+        print amount
         new_custom_entry = Custom_Variable_Daily_Entry(variable_info=variable_info.variable_id, daily_default_v_input_id=default_fk, custom_variable_amount=amount)
+        print new_custom_entry
         db.session.add(new_custom_entry)
         db.session.commit()
 
@@ -346,7 +346,8 @@ def change_records():
 
     current_user = session['current_user']
 
-    date = request.form.get('date') 
+    date = request.form.get('date')
+   # date = "{}-{}-{}".format(when.month, when.day, when.year) 
     sleep_h = request.form.get('sleep_hours')
     sleep_m = request.form.get('sleep_minutes')
     exercise_h = request.form.get('exercise_hours')
@@ -367,12 +368,18 @@ def change_records():
     print "\n\n\n\n\n\n"
 
     entry_number = int(entry_number) - 1
-    all_info = Daily_Input.query.filter_by(user_id=current_user).order_by('date').all()
+    all_info = Daily_Input.query.filter_by(user_id=current_user).order_by(date).all()
     for i in range(len(all_info)):
         print i 
         print all_info[i]
     entry_to_change = all_info[entry_number]
     print entry_to_change
+    custom_v_entry = Custom_Variable_Daily_Entry.query.filter(Custom_Variable_Daily_Entry.daily_default_v_input_id==entry_to_change.input_id).all()
+    print custom_v_entry
+    for i in custom_v_entry:
+        print i 
+        db.session.delete(i)
+        db.session.commit()
     db.session.delete(entry_to_change)
     db.session.commit()
     # wrong_entry = entry_to_change.input_id
@@ -399,18 +406,39 @@ def see_all_records():
     user = User.query.filter(User.ID == current_user).one()
     name = user.name
 
-    all_info = Daily_Input.query.filter_by(user_id=current_user).order_by('date').all()
+    all_info = Daily_Input.query.filter(Daily_Input.user_id==current_user).order_by(Daily_Input.date.desc()).all()
+
+    matching_entries = {}
+    for entry in all_info:
+        default_entry = "{}-{}-{}".format(entry.date.month, entry.date.day, entry.date.year)
+        matching_entries[default_entry] = {}
+        query = Custom_Variable_Daily_Entry.query.filter(Custom_Variable_Daily_Entry.daily_default_v_input_id==entry.input_id).all()
+        if query:
+            print query 
+        for i in query:
+            custom_v = Custom_Variable_Info.query.filter(Custom_Variable_Info.variable_id==i.variable_info).one()
+            name = custom_v.variable_name
+            units = custom_v.variable_units
+            matching_entries[default_entry][name] = {}
+            matching_entries[default_entry][name]['name'] = name 
+            matching_entries[default_entry][name]['units'] = units 
+            matching_entries[default_entry][name]['amount'] = i.custom_variable_amount
+            print matching_entries[default_entry][name]
+
+       
 
     all_entries = []
-
     for entry in all_info:
         input_dictionary = {}
-        input_dictionary['date'] = entry.date
+        input_dictionary['date'] = "{}-{}-{}".format(entry.date.month, entry.date.day, entry.date.year)
         input_dictionary['sleep'] = "{} hours {} minutes".format(hours_and_minutes(entry.sleep)[0], hours_and_minutes(entry.sleep)[1])
         input_dictionary['exercise'] = "{} hours {} minutes".format(hours_and_minutes(entry.exercise)[0], hours_and_minutes(entry.exercise)[1])
         input_dictionary['screentime'] = "{} hours {} minutes".format(hours_and_minutes(entry.screen_time)[0], hours_and_minutes(entry.screen_time)[1])
         input_dictionary['well_being_rating'] = entry.well_being_rating
         all_entries.append(input_dictionary)
+
+
+          
 
     last_30_days = []
     for i in range(31):
@@ -418,9 +446,12 @@ def see_all_records():
 
     length = len(all_entries)
     get_users_custom_v_info(current_user) 
-    size = len(custom_variable_dict)    
+    size = len(custom_variables)    
 
-    return render_template("all_entries.html", all_entries=all_entries, current_user=current_user, length=length, last_30_days=last_30_days, name=name, custom_variable_dict=custom_variable_dict, size=size)    
+    question = len(matching_entries)
+
+    how_many_customs = len(custom_variables)
+    return render_template("all_entries.html", question=question, all_entries=all_entries, current_user=current_user, length=length, last_30_days=last_30_days, name=name, custom_variables=custom_variables, size=size, matching_entries=matching_entries, how_many_customs=how_many_customs)    
     
 def hours_and_minutes(x):
 
