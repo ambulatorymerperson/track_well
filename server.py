@@ -284,6 +284,7 @@ def get_users_custom_v_info(current_user):
         custom_variables[str(user_custom_variables[i].variable_name).rstrip()] = {}
         custom_variables[str(user_custom_variables[i].variable_name).rstrip()]["name"] = str(user_custom_variables[i].variable_name).rstrip()
         custom_variables[str(user_custom_variables[i].variable_name).rstrip()]["unit"] = str(user_custom_variables[i].variable_units).rstrip()
+        custom_variables[str(user_custom_variables[i].variable_name).rstrip()]["amount"] = 0
    
     return custom_variables    
 
@@ -429,59 +430,90 @@ def create_matching_entries_dict(all_info, custom_variables):
     matching_entries = {}
     for entry in all_info:
         default_entry = "{}-{}-{}".format(entry.date.month, entry.date.day, entry.date.year)
-        matching_entries[default_entry] = {}
+        for item in custom_variables:
+            matching_entries[default_entry] = custom_variables
 
-    for date in matching_entries:
-        matching_entries[date]['name'] = None
-        matching_entries[date]['unit'] = None 
+    # for date in matching_entries:
+    #     matching_entries[date]['name'] = None
+    #     matching_entries[date]['unit'] = None 
 
-    query = Custom_Variable_Daily_Entry.query.filter(Custom_Variable_Daily_Entry.daily_default_v_input_id==entry.input_id).all()
-    
-    if query:
-        print query 
+        cv_query = Custom_Variable_Daily_Entry.query.filter(Custom_Variable_Daily_Entry.daily_default_v_input_id==entry.input_id).all()
+       # search_id = cv_query[0]
 
-    for i in query:
-        print i
-        print i  
-        custom_v = Custom_Variable_Info.query.filter(Custom_Variable_Info.variable_id==i.variable_info).one()
-        print "query \n"
-        print custom_v
-        name = str(custom_v.variable_name)
-        units = str(custom_v.variable_units)
-        matching_entries[default_entry][name] = {}
-        matching_entries[default_entry][name]['name'] = name 
-        matching_entries[default_entry][name]['unit'] = units 
-        matching_entries[default_entry][name]['amount'] = str(i.custom_variable_amount)
 
-    print "\ncustom_variables dict\n"
-    print custom_variables
-    print "\nmatching entries dictionary\n"
-    print matching_entries
-    print "\n\n"
+   #     print "\ncustom_variables dict\n"
+     #   print custom_variables
+     #   print "\nmatching entries dictionary\n"
+      #  print matching_entries
+        if cv_query:
+            for item in cv_query:
+                custom_v = Custom_Variable_Info.query.filter(Custom_Variable_Info.variable_id==item.variable_info).one()
+                name = custom_v.variable_name
+                print name
+                amount = item.custom_variable_amount
+                print "\namount\n"
+                print item.custom_variable_amount
+                default_query = Daily_Input.query.filter(Daily_Input.input_id==item.daily_default_v_input_id).all()
+                for item in default_query:
+                    date = item.date
+                    date = "{}-{}-{}".format(date.month, date.day, date.year)
+                    print date
+                    for entry_day in matching_entries:
+                        if entry_day == date:
+                            print date
+                            print cv_query
+                            matching_entries[date][name][amount] = matching_entries[date][name].get('amount', 0) + amount 
+            print "\n\n"
+            print "\ndefault query\n"
+            print default_query
+            print "\n\n\n"
+            print "custom variable query"
+            print cv_query 
+            print "\n\n\n"
+            print "\ncustom_variables dict\n"
+            print custom_variables
+            print "\nmatching entries dictionary\n"
+            print matching_entries
+
+
+    return matching_entries         
+            # print i
+            # print i  
+            # custom_v = Custom_Variable_Info.query.filter(Custom_Variable_Info.variable_id==i.variable_info).one()
+            # print "query \n"
+            # print custom_v
+            # name = str(custom_v.variable_name)
+            # units = str(custom_v.variable_units)
+            # matching_entries[default_entry][name] = {}
+            # matching_entries[default_entry][name]['name'] = name 
+            # matching_entries[default_entry][name]['unit'] = units 
+            # matching_entries[default_entry][name]['amount'] = str(i.custom_variable_amount)
+
+
 
 
 
     # for improvement
 
-    print  custom_variables
+    # print  custom_variables
         
-    for item in custom_variables.keys():
-        custom_v = Custom_Variable_Info.query.filter(Custom_Variable_Info.variable_id==i.variable_info).one()
-        name = custom_v.variable_name
-        print "\ncustom variable lookup"
-        print custom_variables[item]['name']
-        print "\ncustom variable lookup"
-        print custom_variables[item]['unit']
-        print "\n.get"
-        print matching_entries[default_entry][item].get('name', 0)
-        matching_entries[default_entry][item]['name'] = matching_entries[default_entry][item].get('name', custom_variables[item]['name'])
-        matching_entries[default_entry][item]['unit'] = matching_entries[default_entry][item].get('unit', custom_variables[item]['unit'])
-        matching_entries[default_entry][item]['amount'] = i.custom_variable_amount
-        print "\nmatching entries lookup\n"
-        print matching_entries[default_entry][name] 
-        print "\n\n"   
+    # for item in custom_variables.keys():
+    #     custom_v = Custom_Variable_Info.query.filter(Custom_Variable_Info.variable_id==i.variable_info).one()
+    #     name = custom_v.variable_name
+    #     print "\ncustom variable lookup"
+    #     print custom_variables[item]['name']
+    #     print "\ncustom variable lookup"
+    #     print custom_variables[item]['unit']
+    #     print "\n.get"
+    #     print matching_entries[default_entry][item].get('name', 0)
+    #     matching_entries[default_entry][item]['name'] = matching_entries[default_entry][item].get('name', custom_variables[item]['name'])
+    #     matching_entries[default_entry][item]['unit'] = matching_entries[default_entry][item].get('unit', custom_variables[item]['unit'])
+    #     matching_entries[default_entry][item]['amount'] = i.custom_variable_amount
+    #     print "\nmatching entries lookup\n"
+    #     print matching_entries[default_entry][name] 
+    #     print "\n\n"   
 
-    return matching_entries        
+           
     
 def hours_and_minutes(x):
 
