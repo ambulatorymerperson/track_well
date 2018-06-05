@@ -89,6 +89,7 @@
         {% endif %}
     {% endwith %}    
 <h1> {{ name }} Record what you did and how you felt yesterday.</h1>
+{{ custom_variables }}
 <!-- <h3>Behaviors and feelings for</h3><p id="date"></p> -->
 <br><br><br>
 <!-- <form action="/check_info" id="daily_log"> -->
@@ -236,14 +237,14 @@ What was your screentime yesterday?
         <option value="59">59 minutes</option>
     </select><br><br>
     {% if size > 0 %}
-        {% for i in custom_variable_dict.keys() %}
-            {% if custom_variable_dict[i]["unit"] != "Yes/No" %}
-                How much {{custom_variable_dict[i]["name"]}} did you get yesterday?
+        {% for i in custom_variables.keys() %}
+            {% if custom_variables[i]["unit"] != "Yes/No" %}
+                How much {{ custom_variables[i]["name"]}} did you get yesterday?
             {% else %}     
-                Did you {{custom_variable_dict[i]["name"]}} yesterday?
+                Did you {{ custom_variables[i]["name"]}} yesterday?
             {% endif %}    
-            <input type='number' name="{{custom_variable_dict[i]["name"]}}" style="width: 34px;"> {{custom_variable_dict[i]["unit"]}}<br><br>
-         {% endfor %}   
+            <input type='float' name="{{custom_variables[i]["name"]}}" style="width: 34px;"> {{ custom_variables[i]["unit"]}}<br><br>
+        {% endfor %}   
     {% endif %}
 <br><br>
 Rate your sense of well-being yesterday on a scale from 1-5

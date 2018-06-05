@@ -15,7 +15,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 
 from datetime import date, timedelta
 
-from model import User, Daily_Input, Custom_Variable_Daily_Entry, Custom_Variable_Info, connect_to_db, db
+from model import User, Daily_Input, Custom_Variable_Info, Custom_Variable_Daily_Entry, connect_to_db, db
 
 
 app = Flask(__name__)
@@ -27,7 +27,6 @@ regression_info = {}
 
 next_day_regression_info = {}
 
-custom_variables = []
 
 
 
@@ -97,7 +96,7 @@ def show_user_stats():
         return redirect('/')
 
     current_user = session['current_user']
-    user_stats = Daily_Input.query.filter_by(user_id=current_user).order_by(date).all()
+    user_stats = Daily_Input.query.filter_by(user_id=current_user).order_by('date').all()
 
     if len(user_stats) < 1:
         flash('You have not entered any data yet. Please enter data in order to view behavioral graphs.')
@@ -266,7 +265,7 @@ def record_input():
     user = User.query.filter(User.ID == current_user).one()
     name = user.name
     
-    get_users_custom_v_info(current_user)    
+    custom_variables = get_users_custom_v_info(current_user)    
 
     size = len(custom_variables)    
 
@@ -279,19 +278,14 @@ def get_users_custom_v_info(current_user):
 
     user_custom_variables = Custom_Variable_Info.query.filter(Custom_Variable_Info.user_id==current_user).all()
 
+    custom_variables = {}
 
     for i in range(len(user_custom_variables)):
-        new_dict = {}
-        new_dict["name"] = user_custom_variables[i].variable_name
-        print "CONSTRUCTING DICTIONARY"
-        print "CONSTRUCTING DICTIONARY"
-        print "CONSTRUCTING DICTIONARY"
-        print user_custom_variables[i].variable_name
-        print "CONSTRUCTING DICTIONARY"
-        print "CONSTRUCTING DICTIONARY"
-        new_dict["unit"] = user_custom_variables[i].variable_units
-        custom_variables.append(new_dict)
-
+        custom_variables[user_custom_variables[i].variable_name + "variable"] = {}
+        custom_variables[user_custom_variables[i].variable_name + "variable"]["name"] = user_custom_variables[i].variable_name
+        custom_variables[user_custom_variables[i].variable_name + "variable"]["unit"] = user_custom_variables[i].variable_units
+        
+    return custom_variables    
 
 @app.route("/add_info", methods=["POST"])    
 def add_info():
@@ -316,25 +310,29 @@ def add_info():
     screentime_t = round((float(screentime_m)/60.0) + float(screentime_h), 2)
 
     wellness_score = int(wellness_score)
-
+    print yesterday
     new_day_log = Daily_Input(date=yesterday, user_id=current_user, sleep=sleep_t, exercise=exercise_t, screen_time=screentime_t, well_being_rating=wellness_score)
     db.session.add(new_day_log)
     db.session.commit()
 
     #gets the entry we just made
-    default_v_entry = Daily_Input.query.filter(Daily_Input.date==date, Daily_Input.user_id == current_user).one()
+    default_v_entry = Daily_Input.query.filter(Daily_Input.date==yesterday, Daily_Input.user_id == current_user).one()
+
     #gets the input id so we can use it as the foreign key for the entry below
     default_fk = default_v_entry.input_id
 
-    for i in custom_variables:
-        name = i["name"]
-        print name
+    custom_variables = get_users_custom_v_info(current_user)
+
+    for i in custom_variables.keys():
+        name = custom_variables[i]["name"]
+        print name 
         variable_info = Custom_Variable_Info.query.filter(Custom_Variable_Info.user_id==current_user, Custom_Variable_Info.variable_name==name).one()
-        print variable_info
+        print variable_info 
+        v_info = variable_info.variable_id
         amount = request.form.get(name)
-        print amount
-        new_custom_entry = Custom_Variable_Daily_Entry(variable_info=variable_info.variable_id, daily_default_v_input_id=default_fk, custom_variable_amount=amount)
-        print new_custom_entry
+        print amount 
+        new_custom_entry = Custom_Variable_Daily_Entry(variable_info=v_info, daily_default_v_input_id=default_fk, custom_variable_amount=amount)
+        print new_custom_entry 
         db.session.add(new_custom_entry)
         db.session.commit()
 
@@ -357,18 +355,9 @@ def change_records():
     wellness_score = request.form.get('wellness_score')
     entry_number = request.form.get('change_entry_number')
 
-    print "\n\n\n"
-    print date
-    print "\n\n\n"
-    print sleep_h
-    print "\n\n\n"
-    print sleep_m
-    print "\n\n\n"
-    print entry_number
-    print "\n\n\n\n\n\n"
 
     entry_number = int(entry_number) - 1
-    all_info = Daily_Input.query.filter_by(user_id=current_user).order_by(date).all()
+    all_info = Daily_Input.query.filter(Daily_Input.user_id==current_user).order_by(Daily_Input.date.desc()).all()
     for i in range(len(all_info)):
         print i 
         print all_info[i]
@@ -408,6 +397,7 @@ def see_all_records():
 
     all_info = Daily_Input.query.filter(Daily_Input.user_id==current_user).order_by(Daily_Input.date.desc()).all()
 
+
     matching_entries = {}
     for entry in all_info:
         default_entry = "{}-{}-{}".format(entry.date.month, entry.date.day, entry.date.year)
@@ -431,9 +421,9 @@ def see_all_records():
     for entry in all_info:
         input_dictionary = {}
         input_dictionary['date'] = "{}-{}-{}".format(entry.date.month, entry.date.day, entry.date.year)
-        input_dictionary['sleep'] = "{} hours {} minutes".format(hours_and_minutes(entry.sleep)[0], hours_and_minutes(entry.sleep)[1])
-        input_dictionary['exercise'] = "{} hours {} minutes".format(hours_and_minutes(entry.exercise)[0], hours_and_minutes(entry.exercise)[1])
-        input_dictionary['screentime'] = "{} hours {} minutes".format(hours_and_minutes(entry.screen_time)[0], hours_and_minutes(entry.screen_time)[1])
+        input_dictionary['sleep'] = "{} hrs {} mins".format(hours_and_minutes(entry.sleep)[0], hours_and_minutes(entry.sleep)[1])
+        input_dictionary['exercise'] = "{} hrs {} mins".format(hours_and_minutes(entry.exercise)[0], hours_and_minutes(entry.exercise)[1])
+        input_dictionary['screentime'] = "{} hrs {} mins".format(hours_and_minutes(entry.screen_time)[0], hours_and_minutes(entry.screen_time)[1])
         input_dictionary['well_being_rating'] = entry.well_being_rating
         all_entries.append(input_dictionary)
 
@@ -445,13 +435,13 @@ def see_all_records():
         last_30_days.append(date.today() - timedelta(i))
 
     length = len(all_entries)
-    get_users_custom_v_info(current_user) 
-    size = len(custom_variables)    
+
+    custom_variables = get_users_custom_v_info(current_user) 
+   
 
     question = len(matching_entries)
-
     how_many_customs = len(custom_variables)
-    return render_template("all_entries.html", question=question, all_entries=all_entries, current_user=current_user, length=length, last_30_days=last_30_days, name=name, custom_variables=custom_variables, size=size, matching_entries=matching_entries, how_many_customs=how_many_customs)    
+    return render_template("all_entries.html", question=question, all_entries=all_entries, current_user=current_user, length=length, last_30_days=last_30_days, name=name, custom_variables=custom_variables, matching_entries=matching_entries, how_many_customs=how_many_customs)    
     
 def hours_and_minutes(x):
 
@@ -475,6 +465,8 @@ def create_custom_variable():
 @app.route("/add_new_variable", methods=["POST"])
 def add_new_variable():
     variable_name = request.form.get('variable_name')
+    variable_name = str(variable_name)
+    print len(variable_name)
     unit_type = request.form.get('unit_type')
     current_user = session['current_user']
     new_custom_variable = Custom_Variable_Info(user_id=current_user, variable_name=variable_name, variable_units=unit_type)

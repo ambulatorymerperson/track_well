@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+<div>
+{% block content %}    
+</div>   
+{{ custom_variables }}<br>{{ how_many_customs }} <br>
+matching entries : {{ matching_entries }}<br><br>
+{{ question }}
+<div class="container">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class=flashes>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+  <h2>All {{ name }}'s entries</h2>
+  <p>This table contains all the information you have entered thus far:</p>           
+  {% for i in custom_variables %}
+
+    {{i["name"]}}  
+  {% endfor %}                                                                         
+  <div class="table-responsive">          
+  <table class="table" id="all_entries_table">
+    <thead>
+      <tr>
+        <th>Entry Number</th>
+        <th>Date</th>
+        <th>Sleep</th>
+        <th>Screentime</th>
+        <th>Exercise</th>
+        {% for i in custom_variables.keys() %}
+        <th>{{ custom_variables[i]["name"] }}</th>
+        {% endfor %}
+        <th>Well-being</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for entry in all_entries %} 
+            <tr id="row_{{ loop.index }}">
+                <td id="table_entry_{{ loop.index }}" value={{ loop.index }} style="width: 50px;">{{ loop.index }}</td>   
+                <td id="table_entry_date_{{ loop.index }}" value={{ entry['date'] }}>{{ entry['date'] }}</td> 
+                <td id="table_entry_sleep_{{ loop.index }}" value={{ entry['sleep'] }}>{{ entry['sleep'] }} </td>     
+                <td id="table_entry_screentime_{{ loop.index }}" value={{ entry['screentime'] }}>{{ entry['screentime'] }} </td> 
+                <td id="table_entry_exercise_{{ loop.index }}" value={{ entry['exercise'] }}>{{ entry['exercise'] }} </td>
+                {% for i in custom_variables.keys() %}       
+                    {% for key in matching_entries %}
+                        {% if key == entry['date'] %}
+                            {% if matching_entries[key][name]|length > 0 %}    
+                                <td id="cv_{{ loop.index}}">{{ matching_entries[key][name]['amount'] }} {{ matching_entries[key][name]['units'] }}</td>
+                            {% else %}
+                                <td>*</td>    
+                            {% endif %}          
+                        {% endif %}
+                    {% endfor %}  
+                {% endfor %}      
+                <td id="table_entry_wellness_score_{{ loop.index }}" value={{ entry['well_being_rating'] }}>{{ entry['well_being_rating'] }} </td> 
+                
+            </tr>
+        {% endfor %} 
+    </tbody>        
+  </table>
+  </div>
+  <br>
+  <div id="change_entry">
+
+   
+        To change an entry, select the corresponding entry number.
+    <form action="/change_row_in_daily_inputs" method="POST">    
+        <input type='number' name='change_entry_number' id='change_entry_number' value="0" min="1"> /
+
+        <button type=button id="change_entry_btn">Change Entry</button>
+    
+
+    <div class="table-responsive">          
+         <table class="table" id="change_entries_table">
+            <tbody>
+                <tr>
+                
+                        <td style="width: 150px;">date:    
+                        <select name="date" id="date">
+                        {% for date in last_30_days %}    
+                            <option value={{ date.month }}-{{ date.day }}-{{ date.year }}>{{ date.month }}-{{ date.day }}-{{ date.year }}</option>
+                        {% endfor %}    
+                        </select></td> 
+                        <td style="width: 186px;"><strong>sleep</strong>:  
+                        <input type='number' name='sleep_hours' id='sleep_hours' placeholder='100' style="width: 34px;" min="0" max="23" required>  hrs 
+                        <input type='number' name='sleep_minutes' id='sleep_minutes' placeholder='100' style="width: 34px;" min="0" max="59" required>  min
+                        </td>    
+                        <td style="width: 186px;">   
+                        screentime:
+                        <input type='number' name='screentime_hours' id='screentime_hours' placeholder='100' style="width: 34px;" min="0" max="18" required>  hrs 
+                        <input type='number' name='screentime_minutes' id='screentime_minutes' style="width: 34px;" placeholder='100' min="0" max="59" required>  min
+                        </td>
+                        <td style="width: 186px;">exercise:
+                        <input type='number' name='exercise_hours' id='exercise_hours' style="width: 34px;" placeholder='100' min="0" max="10" required>  hrs 
+                        <input type='number' name='exercise_minutes' id='exercise_minutes' style="width: 34px;" placeholder='100' min="0" max="59" required>  min
+                        </td> 
+                        <td style="width: 130px;">
+                        <strong>well-being</strong>:
+                        <input type='number' name='wellness_score' id='wellness_score' min="1" max="5" style="width: 30px;" placeholder='100' required></td>  
+
+                </tr>              
+            </tbody>
+        </table> 
+        <input type=submit id="submit_data"> 
+        </form>  
+    </div>          
+
+
+</div>
+<script src="https://code.jQuery.com/jQuery-3.2.1.min.js"></script>
+<script>
+"use strict";
+
+$("#change_entries_table").hide();
+$("#submit_data").hide();
+
+function showForms(evt) {
+    $("#change_entries_table").show();
+    $("#submit_data").show();
+    let row_num = $("#change_entry_number").val();
+    let default_sleep = $("#table_entry_sleep_" + row_num).html();
+    $("#sleep_hours").placeholder = default_sleep;
+
+}
+
+$('#change_entry_btn').on('click', showForms);
+
+
+
+
+
+</script>
+{% endblock %}
+</body>
+</html>   

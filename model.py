@@ -72,8 +72,8 @@ class Custom_Variable_Info(db.Model):
     __tablename__ = "custom_variable_info"
 
     variable_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    user_id = db.Column(db.String(15), db.ForeignKey('users.ID'), nullable=False)
-    variable_name = db.Column(db.String(20), nullable=False)
+    user_id = db.Column(db.String(30), db.ForeignKey('users.ID'), nullable=False)
+    variable_name = db.Column(db.String(30), nullable=False)
     variable_units = db.Column(db.String(10), nullable=False)
 
     def __repr__(self):
