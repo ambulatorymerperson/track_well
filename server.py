@@ -142,6 +142,19 @@ def show_user_stats():
     for j in range(len(independent_variables)) and range(len(regression_lines)):
         for i in range(len(independent_variables[j])) and range(len(well_being_rating)):
             regression_lines[j].append([independent_variables[j][i], well_being_rating[i]])
+    
+    same_day_custom_v_r_squared = {}
+            
+    for v in records_dict.keys():
+        behavior = []
+        wellness = []
+        for lst in records_dict[v]:
+            behavior.append(lst[0])
+            wellness.append(lst[1])
+        slope, intercept, r_value, p_value, std_err = stats.linregress(behavior, wellness)
+        r_squared = r_value**2
+        same_day_custom_v_r_squared[v] = r_squared   
+
 
 
     for lst in independent_variables:    
@@ -209,7 +222,26 @@ def show_user_stats():
 
     same_day_message = "Out of all the activities you are tracking, {} is the most relevent to your sense of well-being that day. {}".format(most_relevent_activity, same_day_insight)    
     
-    return render_template("my_stats.html", sleep=sleep_r, custom_variables_with_next_day_wellness=custom_variables_with_next_day_wellness, records_dict=records_dict, screentime=screentime_r, exercise=exercise_r, name=name, independent_variables=independent_variables, regression_info=regression_info, ordered_ars=ordered_ars, sleep_points=sleep_points, screen_points=screen_points, exercise_points=exercise_points, biggest_next_day_impact=biggest_next_day_impact, next_day_insight=next_day_insight, same_day_message=same_day_message, custom_variables_list=custom_variables_list)             
+    return render_template("my_stats.html", sleep=sleep_r, same_day_custom_v_r_squared=same_day_custom_v_r_squared, custom_variables_with_next_day_wellness=custom_variables_with_next_day_wellness, records_dict=records_dict, screentime=screentime_r, exercise=exercise_r, name=name, independent_variables=independent_variables, regression_info=regression_info, ordered_ars=ordered_ars, sleep_points=sleep_points, screen_points=screen_points, exercise_points=exercise_points, biggest_next_day_impact=biggest_next_day_impact, next_day_insight=next_day_insight, same_day_message=same_day_message, custom_variables_list=custom_variables_list)             
+
+
+# def make_custom_v_and_wellness_dict(users_variables):
+#     """Pairs custom variable amount with corresponding wellness score and returns dictionary"""
+
+#     records_dict = {}
+#     for item in users_variables:
+#         behavior_and_well_being_lst = []
+#         records = Custom_Variable_Daily_Entry.query.filter(Custom_Variable_Daily_Entry.variable_info==item.variable_id).all()
+#         for entry in records:
+#             day = []
+#             day.append(entry.custom_variable_amount)
+#             default_entry = Daily_Input.query.filter(Daily_Input.input_id==entry.daily_default_v_input_id).one()
+#             day.append(default_entry.well_being_rating)
+#             behavior_and_well_being_lst.append(day)
+
+#         records_dict[str(item.variable_name)] = behavior_and_well_being_lst
+
+#     return records_dict 
 
 
 def make_custom_v_and_wellness_dict(users_variables):
@@ -228,7 +260,9 @@ def make_custom_v_and_wellness_dict(users_variables):
 
         records_dict[str(item.variable_name)] = behavior_and_well_being_lst
 
-    return records_dict        
+    return records_dict
+
+
 def get_custom_v_next_day_effects(users_variables, current_user):
     """Pairs custom variable amount with next day wellness score and returns dictionary"""
 
