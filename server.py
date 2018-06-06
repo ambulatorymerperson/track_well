@@ -98,6 +98,12 @@ def show_user_stats():
     current_user = session['current_user']
     user_stats = Daily_Input.query.filter_by(user_id=current_user).order_by('date').all()
 
+    users_variables = Custom_Variable_Info.query.filter(Custom_Variable_Info.user_id==current_user).all()
+
+    records_dict = make_custom_v_and_wellness_dict(users_variables)
+
+    custom_variables_with_next_day_wellness = get_custom_v_next_day_effects(users_variables, current_user)
+
     if len(user_stats) < 1:
         flash('You have not entered any data yet. Please enter data in order to view behavioral graphs.')
         return redirect("/record_daily_input")
@@ -190,6 +196,10 @@ def show_user_stats():
     elif next_day_regression_info[biggest_next_day_impact]["slope"] > 0:
         next_day_insight = "the more {} you get, the better you tend to feel the next day.".format(biggest_next_day_impact)
 
+    custom_variables = get_users_custom_v_info(current_user)
+    custom_variables_list = []
+    for i in custom_variables.keys():
+        custom_variables_list.append(i)   
     same_day_insight = "stuff"
 
     if regression_info[most_relevent_activity]["slope"] < 0:
@@ -199,7 +209,51 @@ def show_user_stats():
 
     same_day_message = "Out of all the activities you are tracking, {} is the most relevent to your sense of well-being that day. {}".format(most_relevent_activity, same_day_insight)    
     
-    return render_template("my_stats.html", sleep=sleep_r, screentime=screentime_r, exercise=exercise_r, name=name, independent_variables=independent_variables, regression_info=regression_info, ordered_ars=ordered_ars, sleep_points=sleep_points, screen_points=screen_points, exercise_points=exercise_points, biggest_next_day_impact=biggest_next_day_impact, next_day_insight=next_day_insight, same_day_message=same_day_message)             
+    return render_template("my_stats.html", sleep=sleep_r, custom_variables_with_next_day_wellness=custom_variables_with_next_day_wellness, records_dict=records_dict, screentime=screentime_r, exercise=exercise_r, name=name, independent_variables=independent_variables, regression_info=regression_info, ordered_ars=ordered_ars, sleep_points=sleep_points, screen_points=screen_points, exercise_points=exercise_points, biggest_next_day_impact=biggest_next_day_impact, next_day_insight=next_day_insight, same_day_message=same_day_message, custom_variables_list=custom_variables_list)             
+
+
+def make_custom_v_and_wellness_dict(users_variables):
+    """Pairs custom variable amount with corresponding wellness score and returns dictionary"""
+
+    records_dict = {}
+    for item in users_variables:
+        behavior_and_well_being_lst = []
+        records = Custom_Variable_Daily_Entry.query.filter(Custom_Variable_Daily_Entry.variable_info==item.variable_id).all()
+        for entry in records:
+            day = []
+            day.append(entry.custom_variable_amount)
+            default_entry = Daily_Input.query.filter(Daily_Input.input_id==entry.daily_default_v_input_id).one()
+            day.append(default_entry.well_being_rating)
+            behavior_and_well_being_lst.append(day)
+
+        records_dict[str(item.variable_name)] = behavior_and_well_being_lst
+
+    return records_dict        
+def get_custom_v_next_day_effects(users_variables, current_user):
+    """Pairs custom variable amount with next day wellness score and returns dictionary"""
+
+    records_dict = {}
+    for item in users_variables:
+        behavior_and_well_being_lst = []
+        records = Custom_Variable_Daily_Entry.query.filter(Custom_Variable_Daily_Entry.variable_info==item.variable_id).all()
+        for entry in records:
+            day = []
+            day.append(entry.custom_variable_amount)
+            default_entry = Daily_Input.query.filter(Daily_Input.input_id==entry.daily_default_v_input_id).one()
+            default_entry.date 
+            next_day = default_entry.date + timedelta(days=1)
+            next_day_wellness_score = Daily_Input.query.filter(Daily_Input.date==next_day, Daily_Input.user_id==current_user).all()
+            if not next_day_wellness_score:
+                pass
+            for i in next_day_wellness_score:
+                day.append(i.well_being_rating)
+            if len(day) == 2:        
+                behavior_and_well_being_lst.append(day)
+
+        records_dict[str(item.variable_name)] = behavior_and_well_being_lst
+    return records_dict    
+
+
                  
 # key refers to keys in regression_info dictionary. These keys share the same name as the lists in the
 # independent variable list, because the dictionary info is based on these lists

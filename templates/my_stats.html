@@ -8,11 +8,13 @@
  
 <br><br>
 <h1 id="name">{{ name }}'s stats</h1><br>
-
+{{ records_dict }}<br><br>
+{{ custom_variables_with_next_day_wellness }}
 <br>
 <script src="http://code.highcharts.com/highcharts.js"></script>
 <script src="http://code.highcharts.com/modules/exporting.js"></script>
-    <script src="//rawgithub.com/phpepe/highcharts-regression/master/highcharts-regression.js"> </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
+<script src="//rawgithub.com/phpepe/highcharts-regression/master/highcharts-regression.js"> </script>
 
 <div class="container">
     <div class="row">
@@ -23,6 +25,8 @@
             <div class="spacer"></div><div id="text"></div>
             <div id="next_day_insight"></div>
             <div id="chart-B" class="chart"></div> <!-- Container for Chart B -->
+            <div id="variable" class="chart"></div>
+            <div id="test" class="chart"></div>       
         </div>
     </div>
 </div>            
@@ -40,10 +44,13 @@ let exercise_points = {{ exercise_points|tojson|safe }};
 let next_day_variable = {{ biggest_next_day_impact|tojson|safe }};
 let next_day_insight = {{ next_day_insight|tojson|safe }};
 let same_day_message = {{ same_day_message|tojson|safe }};
+let json_custom_variables = {{ custom_variables_list|tojson|safe }};
  
 
 
 $("#same_day_insight").html(same_day_message);
+
+
 
 $(function () { 
    let  myChart = Highcharts.chart('chart-A', {
@@ -196,7 +203,91 @@ $(function () {
 
 });
 
+for (let variable of json_custom_variables)
+{   $("#test").append(myLineChart)
+    let  myLineChart = new Chart(ctx, {
+        type: 'line',
+        data: sleep_points,
+        options: options
+});
+    $("#test").append(myLineChart);
+}
 
+// $(function () {
+
+//     for (let variable of json_custom_variables)
+//     {
+//         let id = "container" + variable;
+//         // $("#"+id).highcharts({
+//         let mychart = Highcharts.chart($("#test"), {    
+//         chart: {
+//             type: 'scatter',
+//             zoomType: 'xy'
+//         },
+//         title: {
+//             text: 'Behaviors & How You Feel the Next Day'
+//         },
+//         xAxis: {
+//             title: {
+//                 text: 'habits'
+//             }
+//         },
+//         yAxis: {
+//             title: {
+//                 text: 'well-being'
+//             }
+//         },
+//         legend: {
+//                 layout: 'vertical',
+//                 align: 'left',
+//                 verticalAlign: 'top',
+//                 x: 100,
+//                 y: 70,
+//                 floating: true,
+//                 backgroundColor: '#FFFFFF',
+//                 borderWidth: 1
+//             },
+
+
+//         series: [
+//            {regression: true ,
+//             regressionSettings: {
+//                 type: 'polynomial',
+//                 color:  'rgba(45, 90, 255, .9)',
+//                 name: "%eq | r2: %r" 
+//             },
+//             name: 'sleep',
+//             color: 'rgba(223, 83, 83, .5)',
+//             data: sleep_points 
+//             },
+
+//             {regression: true ,
+//             regressionSettings: {
+//                 type: 'polynomial',
+//                 color:  'rgba(40, 100, 2, .9)',
+//                 name: "%eq | r2: %r" 
+//             },
+            
+//             name: 'exercise',
+//             color: 'rgba(223, 83, 83, .5)',
+//             data: exercise_points 
+//             },
+
+//             {regression: true ,
+//             regressionSettings: {
+//                 type: 'polynomial',
+//                 color:  'rgba(60, 100, 2, 10)',
+//                 name: "%eq | r2: %r" 
+//             },
+            
+//             name: 'screentime',
+//             color: 'rgba(223, 90, 40, .5)',
+//             data: screen_points
+//             }
+//                     ] 
+//     });
+//     $("#test").append(mychart);
+// }});
 
 </script>
 
