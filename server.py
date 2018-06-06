@@ -372,9 +372,6 @@ def change_records():
         db.session.commit()
     db.session.delete(entry_to_change)
     db.session.commit()
-    # wrong_entry = entry_to_change.input_id
-    # deletion = daily_inputs.delete(daily_inputs.input_id == wrong_entry)
-    # deletion.execute()
 
     sleep_t = round((float(sleep_m)/60.0) + float(sleep_h), 2)
     exercise_t = round((float(exercise_m)/60.0) + float(exercise_h), 2)
@@ -383,6 +380,23 @@ def change_records():
     new_day_log = Daily_Input(date=date, user_id=current_user, sleep=sleep_t, exercise=exercise_t, screen_time=screentime_t, well_being_rating=wellness_score)
     db.session.add(new_day_log)
     db.session.commit()
+
+    get_default_entry_id = Daily_Input.query.filter(Daily_Input.user_id==current_user, Daily_Input.date==date).one()
+
+    custom_variables = get_users_custom_v_info(current_user)
+
+    for variable in custom_variables.keys():
+        custom_v = request.form.get(variable)
+        print variable
+        usersvars = Custom_Variable_Info.query.filter(Custom_Variable_Info.user_id==current_user).all()
+        print usersvars
+        custom_v_info = Custom_Variable_Info.query.filter(Custom_Variable_Info.variable_name==variable, Custom_Variable_Info.user_id==current_user).one()
+        custom_v_id = custom_v_info.variable_id
+        entry_id = get_default_entry_id.input_id
+        new_custom_entry = Custom_Variable_Daily_Entry(variable_info=custom_v_id, daily_default_v_input_id=entry_id, custom_variable_amount=custom_v)
+        db.session.add(new_custom_entry)
+        db.session.commit()
+
     flash('entry successfully changed!')
     return redirect('/see_all_records')
 

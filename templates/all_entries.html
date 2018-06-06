@@ -97,6 +97,11 @@ matching entries : {{ matching_entries }}<br><br>
                         <input type='number' name='exercise_hours' id='exercise_hours' style="width: 34px;" placeholder='100' min="0" max="10" required>  hrs 
                         <input type='number' name='exercise_minutes' id='exercise_minutes' style="width: 34px;" placeholder='100' min="0" max="59" required>  min
                         </td> 
+                        {% for variable in custom_variables.keys() %}
+                            <td style="width: 186px;"> {{ variable }}:
+                                <input type='number' name="{{ variable }}" id="{{ variable }}" style="width: 34px;">
+                            </td>
+                        {% endfor %}        
                         <td style="width: 130px;">
                         <strong>well-being</strong>:
                         <input type='number' name='wellness_score' id='wellness_score' min="1" max="5" style="width: 30px;" placeholder='100' required></td>  
