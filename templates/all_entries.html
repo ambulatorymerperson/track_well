@@ -2,9 +2,6 @@
 <div>
 {% block content %}    
 </div>   
-{{ custom_variables }}<br>{{ how_many_customs }} <br>
-matching entries : {{ matching_entries }}<br><br>
-{{ question }}
 <div class="container">
     {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -48,7 +45,7 @@ matching entries : {{ matching_entries }}<br><br>
                     {% for key in matching_entries %}
                         {% if key == entry['date'] %}
                             {% if matching_entries[key][i] > 0 %}    
-                                <td id="cv_{{ loop.index}}">{{ matching_entries[key][i] }} units </td>
+                                <td id="cv_{{ loop.index}}">{{ matching_entries[key][i] }} {{ custom_variables[i]['unit'] }}</td>
                             {% else %}
                                 <td>*</td>    
                             {% endif %}          
@@ -99,7 +96,7 @@ matching entries : {{ matching_entries }}<br><br>
                         </td> 
                         {% for variable in custom_variables.keys() %}
                             <td style="width: 186px;"> {{ variable }}:
-                                <input type='number' name="{{ variable }}" id="{{ variable }}" style="width: 34px;">
+                                <input type='float' name="{{ variable }}" id="{{ variable }}" style="width: 34px;"> {{ custom_variables[variable]['unit'] }}
                             </td>
                         {% endfor %}        
                         <td style="width: 130px;">

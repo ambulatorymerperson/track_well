@@ -438,7 +438,7 @@ def see_all_records():
 
     question = len(matching_entries)
     how_many_customs = len(custom_variables)
-    return render_template("all_entries.html", question=question, all_entries=all_entries, current_user=current_user, length=length, last_30_days=last_30_days, name=name, custom_variables=custom_variables, matching_entries=matching_entries, how_many_customs=how_many_customs)    
+    return render_template("all_entries.html", all_entries=all_entries, current_user=current_user, length=length, last_30_days=last_30_days, name=name, custom_variables=custom_variables, matching_entries=matching_entries, how_many_customs=how_many_customs)    
 
 def create_matching_entries_dict(all_info, custom_variables):
     matching_entries = {}  
