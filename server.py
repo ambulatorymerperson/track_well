@@ -284,7 +284,7 @@ def get_users_custom_v_info(current_user):
         custom_variables[str(user_custom_variables[i].variable_name).rstrip()] = {}
         custom_variables[str(user_custom_variables[i].variable_name).rstrip()]["name"] = str(user_custom_variables[i].variable_name).rstrip()
         custom_variables[str(user_custom_variables[i].variable_name).rstrip()]["unit"] = str(user_custom_variables[i].variable_units).rstrip()
-        custom_variables[str(user_custom_variables[i].variable_name).rstrip()]["amount"] = 0
+
    
     return custom_variables    
 
@@ -427,53 +427,56 @@ def see_all_records():
     return render_template("all_entries.html", question=question, all_entries=all_entries, current_user=current_user, length=length, last_30_days=last_30_days, name=name, custom_variables=custom_variables, matching_entries=matching_entries, how_many_customs=how_many_customs)    
 
 def create_matching_entries_dict(all_info, custom_variables):
-    matching_entries = {}
+    matching_entries = {}  
     for entry in all_info:
+        # gets each date of all entries into string format
         default_entry = "{}-{}-{}".format(entry.date.month, entry.date.day, entry.date.year)
-        for item in custom_variables:
-            matching_entries[default_entry] = custom_variables
 
-    # for date in matching_entries:
-    #     matching_entries[date]['name'] = None
-    #     matching_entries[date]['unit'] = None 
+        #sets each variable and its info as a value to a key that is a date
+        matching_entries[default_entry] = {}
+        for item in custom_variables.keys():
+            matching_entries[default_entry][item] = 0
 
-        cv_query = Custom_Variable_Daily_Entry.query.filter(Custom_Variable_Daily_Entry.daily_default_v_input_id==entry.input_id).all()
-       # search_id = cv_query[0]
+        input_ids_to_check = entry.input_id
+        date_to_check = default_entry
+        matching_entries = find_custom_variable_amounts(input_ids_to_check, date_to_check, matching_entries)
+    print "\ncustom_variables dict\n"
+    print custom_variables       
+    return matching_entries
 
 
-   #     print "\ncustom_variables dict\n"
-     #   print custom_variables
-     #   print "\nmatching entries dictionary\n"
-      #  print matching_entries
-        if cv_query:
-            for item in cv_query:
-                custom_v = Custom_Variable_Info.query.filter(Custom_Variable_Info.variable_id==item.variable_info).one()
-                name = custom_v.variable_name
-                print name
+def find_custom_variable_amounts(input_ids_to_check, date_to_check, matching_entries):
+    print "checking",
+    print input_ids_to_check     
+    # gets all the variable entries with a given input id. does this for each entry  
+    cv_query = Custom_Variable_Daily_Entry.query.filter(Custom_Variable_Daily_Entry.daily_default_v_input_id==input_ids_to_check).all()
+    print cv_query
+    for item in cv_query:
+        # get the information associated with that variable
+        custom_v = Custom_Variable_Info.query.filter(Custom_Variable_Info.variable_id==item.variable_info).one()
+        #its name
+        name = custom_v.variable_name
+        print name
+        for entry_day in matching_entries:
+            # if date of input is the same as matching_entries key
+            if entry_day == date_to_check:
+                print "\ndate:"
+                print date_to_check
+                print "\n cv_query"
+                print cv_query
+                # how much was recorded for this entry
                 amount = item.custom_variable_amount
                 print "\namount\n"
-                print item.custom_variable_amount
-                default_query = Daily_Input.query.filter(Daily_Input.input_id==item.daily_default_v_input_id).all()
-                for item in default_query:
-                    date = item.date
-                    date = "{}-{}-{}".format(date.month, date.day, date.year)
-                    print date
-                    for entry_day in matching_entries:
-                        if entry_day == date:
-                            print date
-                            print cv_query
-                            matching_entries[date][name][amount] = matching_entries[date][name].get('amount', 0) + amount 
-            print "\n\n"
-            print "\ndefault query\n"
-            print default_query
-            print "\n\n\n"
-            print "custom variable query"
-            print cv_query 
-            print "\n\n\n"
-            print "\ncustom_variables dict\n"
-            print custom_variables
-            print "\nmatching entries dictionary\n"
-            print matching_entries
+                print amount 
+                matching_entries[date_to_check][name] = matching_entries[date_to_check].get('name', 0) + amount 
+            else:
+                pass      
+        print "\n\n\n"
+        print "custom variable query"
+        print cv_query 
+    print "\n\n\n"
+    print "\nmatching entries dictionary\n"
+    print matching_entries
 
 
     return matching_entries         

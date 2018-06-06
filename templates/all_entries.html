@@ -47,8 +47,8 @@ matching entries : {{ matching_entries }}<br><br>
                 {% for i in custom_variables.keys() %}       
                     {% for key in matching_entries %}
                         {% if key == entry['date'] %}
-                            {% if matching_entries[key][name]|length > 0 %}    
-                                <td id="cv_{{ loop.index}}">{{ matching_entries[key][name]['amount'] }} {{ matching_entries[key][name]['units'] }}</td>
+                            {% if matching_entries[key][i] > 0 %}    
+                                <td id="cv_{{ loop.index}}">{{ matching_entries[key][i] }} units </td>
                             {% else %}
                                 <td>*</td>    
                             {% endif %}          
