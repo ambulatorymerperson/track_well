@@ -8,10 +8,7 @@
  
 <br><br>
 <h1 id="name">{{ name }}'s stats</h1><br>
-{{ records_dict }}<br><br>
-{{ custom_variables_with_next_day_wellness }}
-<br>
-{{ same_day_custom_v_r_squared }}
+
 <br>
 <script src="http://code.highcharts.com/highcharts.js"></script>
 <script src="http://code.highcharts.com/modules/exporting.js"></script>
@@ -28,7 +25,8 @@
             <div id="next_day_insight"></div>
             <div id="chart-B" class="chart"></div> <!-- Container for Chart B -->
             <div id="variable" class="chart"></div>
-            <div id="test" class="chart"></div>       
+            <div id="test" class="chart"></div> 
+            <div id="custom_variable_insight">{{ same_day_custom_variable_insight }} {{ next_day_custom_variable_insight }}</div>      
         </div>
     </div>
 </div>            

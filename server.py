@@ -104,6 +104,7 @@ def show_user_stats():
 
     custom_variables_with_next_day_wellness = get_custom_v_next_day_effects(users_variables, current_user)
 
+
     if len(user_stats) < 1:
         flash('You have not entered any data yet. Please enter data in order to view behavioral graphs.')
         return redirect("/record_daily_input")
@@ -143,18 +144,13 @@ def show_user_stats():
         for i in range(len(independent_variables[j])) and range(len(well_being_rating)):
             regression_lines[j].append([independent_variables[j][i], well_being_rating[i]])
     
-    same_day_custom_v_r_squared = {}
-            
-    for v in records_dict.keys():
-        behavior = []
-        wellness = []
-        for lst in records_dict[v]:
-            behavior.append(lst[0])
-            wellness.append(lst[1])
-        slope, intercept, r_value, p_value, std_err = stats.linregress(behavior, wellness)
-        r_squared = r_value**2
-        same_day_custom_v_r_squared[v] = r_squared   
+    same_day_custom_v_r_squared = get_custom_r_squared(records_dict)
 
+    next_day_custom_v_r_squared = get_custom_r_squared(custom_variables_with_next_day_wellness)
+
+    same_day_custom_variable_insight, same_day_cv, sd_slope = write_insight_for_custom_variable(same_day_custom_v_r_squared, "same day")
+
+    next_day_custom_variable_insight, next_day_cv, nd_slp = write_insight_for_custom_variable(next_day_custom_v_r_squared, "next day", same_day_cv, sd_slope)
 
 
     for lst in independent_variables:    
@@ -210,9 +206,11 @@ def show_user_stats():
         next_day_insight = "the more {} you get, the better you tend to feel the next day.".format(biggest_next_day_impact)
 
     custom_variables = get_users_custom_v_info(current_user)
+
     custom_variables_list = []
     for i in custom_variables.keys():
-        custom_variables_list.append(i)   
+        custom_variables_list.append(i) 
+
     same_day_insight = "stuff"
 
     if regression_info[most_relevent_activity]["slope"] < 0:
@@ -222,26 +220,62 @@ def show_user_stats():
 
     same_day_message = "Out of all the activities you are tracking, {} is the most relevent to your sense of well-being that day. {}".format(most_relevent_activity, same_day_insight)    
     
-    return render_template("my_stats.html", sleep=sleep_r, same_day_custom_v_r_squared=same_day_custom_v_r_squared, custom_variables_with_next_day_wellness=custom_variables_with_next_day_wellness, records_dict=records_dict, screentime=screentime_r, exercise=exercise_r, name=name, independent_variables=independent_variables, regression_info=regression_info, ordered_ars=ordered_ars, sleep_points=sleep_points, screen_points=screen_points, exercise_points=exercise_points, biggest_next_day_impact=biggest_next_day_impact, next_day_insight=next_day_insight, same_day_message=same_day_message, custom_variables_list=custom_variables_list)             
+    return render_template("my_stats.html", sleep=sleep_r, same_day_custom_variable_insight=same_day_custom_variable_insight, next_day_custom_variable_insight=next_day_custom_variable_insight, custom_variables_with_next_day_wellness=custom_variables_with_next_day_wellness, screentime=screentime_r, exercise=exercise_r, name=name, independent_variables=independent_variables, regression_info=regression_info, ordered_ars=ordered_ars, sleep_points=sleep_points, screen_points=screen_points, exercise_points=exercise_points, biggest_next_day_impact=biggest_next_day_impact, next_day_insight=next_day_insight, same_day_message=same_day_message, custom_variables_list=custom_variables_list)             
+
+def get_custom_r_squared(dictionary):
+
+    r_dictionary = {}
+            
+    for v in dictionary.keys():
+        behavior = []
+        wellness = []
+        for lst in dictionary[v]:
+            behavior.append(lst[0])
+            wellness.append(lst[1]) 
+        slope, intercept, r_value, p_value, std_err = stats.linregress(behavior, wellness)
+        r_squared = r_value**2
+        r_dictionary[v] = {}
+        n = len(behavior)
+        if n > 2:
+            adjusted_r_squared = 1 - (((1 - r_squared) * (n-1))/(n-1-1))
+            r_dictionary[v]['adjusted_r_squared'] = adjusted_r_squared 
+        r_dictionary[v]['r_squared'] = r_squared
+        r_dictionary[v]['slope'] = slope
 
 
-# def make_custom_v_and_wellness_dict(users_variables):
-#     """Pairs custom variable amount with corresponding wellness score and returns dictionary"""
 
-#     records_dict = {}
-#     for item in users_variables:
-#         behavior_and_well_being_lst = []
-#         records = Custom_Variable_Daily_Entry.query.filter(Custom_Variable_Daily_Entry.variable_info==item.variable_id).all()
-#         for entry in records:
-#             day = []
-#             day.append(entry.custom_variable_amount)
-#             default_entry = Daily_Input.query.filter(Daily_Input.input_id==entry.daily_default_v_input_id).one()
-#             day.append(default_entry.well_being_rating)
-#             behavior_and_well_being_lst.append(day)
+ 
+    return r_dictionary     
 
-#         records_dict[str(item.variable_name)] = behavior_and_well_being_lst
+def write_insight_for_custom_variable(dictionary, string, same_day=None, slp=None):
+    """look up adjusted r squared and slope to determine most relevent custom variable"""
 
-#     return records_dict 
+
+    highest_influence = None
+    number = None 
+
+    for key in dictionary:
+        if dictionary[key].get('adjusted_r_squared', 0) > number:
+            highest_influence = key 
+
+    if dictionary[highest_influence]['slope'] > 0:
+        slope = "more"
+        sign = 1
+    else:
+        slope = "less"
+        sign = -1
+
+    if string == "same day":    
+        message = "Out of all the variables you created, getting {} {} is the most relevent to your {} sense of well being.".format(slope, highest_influence, string)
+
+    elif highest_influence == same_day and slp != sign:
+        message = "However, the {} {} you get, the better you feel the next day.".format(slope, highest_influence)
+    
+    else:
+        message = "The {} {} you get, the better you feel the next day.".format(slope, highest_influence)
+
+    return message, highest_influence, sign  
+          
 
 
 def make_custom_v_and_wellness_dict(users_variables):
@@ -302,6 +336,8 @@ def add_regression_info_to_dict(dictionary, key, lst, n):
     adjusted_r_squared = 1 - (((1 - r_value**2) * (n-1))/(n-1-1))
     dictionary[key]['adjusted_r_squared'] = adjusted_r_squared
 
+
+
 def determine_relevence_of_behavior(dictionary):
     """Pass in the dict with all the regression info and see which behaviors are most relevent to the user.
     Return print statements that provide correlative insights."""
@@ -329,8 +365,7 @@ def find_next_day_effects(indep_v_list, wellness_scores):
     return plot_points_for_next_day_effects[0], plot_points_for_next_day_effects[1], plot_points_for_next_day_effects[2]        
 
 def create_regression_dict(lst, sublist_1, sublist_2, sublist_3):
-        for item in lst:
-            print item     
+        for item in lst:   
             slope, intercept, r_value, p_value, std_err = stats.linregress(item)
             sub_dict = {'slope': slope, 'intercept': intercept, 'r_value': r_value, 'p_value': p_value, 'std_err': std_err}
             if item == sublist_1:
@@ -399,7 +434,6 @@ def add_info():
     screentime_t = round((float(screentime_m)/60.0) + float(screentime_h), 2)
 
     wellness_score = int(wellness_score)
-    print yesterday
     new_day_log = Daily_Input(date=yesterday, user_id=current_user, sleep=sleep_t, exercise=exercise_t, screen_time=screentime_t, well_being_rating=wellness_score)
     db.session.add(new_day_log)
     db.session.commit()
@@ -414,14 +448,10 @@ def add_info():
 
     for i in custom_variables.keys():
         name = custom_variables[i]["name"]
-        print name 
         variable_info = Custom_Variable_Info.query.filter(Custom_Variable_Info.user_id==current_user, Custom_Variable_Info.variable_name==name).one()
-        print variable_info 
         v_info = variable_info.variable_id
         amount = request.form.get(name)
-        print amount 
         new_custom_entry = Custom_Variable_Daily_Entry(variable_info=v_info, daily_default_v_input_id=default_fk, custom_variable_amount=amount)
-        print new_custom_entry 
         db.session.add(new_custom_entry)
         db.session.commit()
 
@@ -475,9 +505,7 @@ def change_records():
 
     for variable in custom_variables.keys():
         custom_v = request.form.get(variable)
-        print variable
         usersvars = Custom_Variable_Info.query.filter(Custom_Variable_Info.user_id==current_user).all()
-        print usersvars
         custom_v_info = Custom_Variable_Info.query.filter(Custom_Variable_Info.variable_name==variable, Custom_Variable_Info.user_id==current_user).one()
         custom_v_id = custom_v_info.variable_id
         entry_id = get_default_entry_id.input_id
@@ -541,9 +569,7 @@ def create_matching_entries_dict(all_info, custom_variables):
 
         input_ids_to_check = entry.input_id
         date_to_check = default_entry
-        matching_entries = find_custom_variable_amounts(input_ids_to_check, date_to_check, matching_entries)
-    print "\ncustom_variables dict\n"
-    print custom_variables       
+        matching_entries = find_custom_variable_amounts(input_ids_to_check, date_to_check, matching_entries)      
     return matching_entries
 
 
@@ -582,41 +608,7 @@ def find_custom_variable_amounts(input_ids_to_check, date_to_check, matching_ent
 
 
     return matching_entries         
-            # print i
-            # print i  
-            # custom_v = Custom_Variable_Info.query.filter(Custom_Variable_Info.variable_id==i.variable_info).one()
-            # print "query \n"
-            # print custom_v
-            # name = str(custom_v.variable_name)
-            # units = str(custom_v.variable_units)
-            # matching_entries[default_entry][name] = {}
-            # matching_entries[default_entry][name]['name'] = name 
-            # matching_entries[default_entry][name]['unit'] = units 
-            # matching_entries[default_entry][name]['amount'] = str(i.custom_variable_amount)
-
-
-
-
-
-    # for improvement
-
-    # print  custom_variables
-        
-    # for item in custom_variables.keys():
-    #     custom_v = Custom_Variable_Info.query.filter(Custom_Variable_Info.variable_id==i.variable_info).one()
-    #     name = custom_v.variable_name
-    #     print "\ncustom variable lookup"
-    #     print custom_variables[item]['name']
-    #     print "\ncustom variable lookup"
-    #     print custom_variables[item]['unit']
-    #     print "\n.get"
-    #     print matching_entries[default_entry][item].get('name', 0)
-    #     matching_entries[default_entry][item]['name'] = matching_entries[default_entry][item].get('name', custom_variables[item]['name'])
-    #     matching_entries[default_entry][item]['unit'] = matching_entries[default_entry][item].get('unit', custom_variables[item]['unit'])
-    #     matching_entries[default_entry][item]['amount'] = i.custom_variable_amount
-    #     print "\nmatching entries lookup\n"
-    #     print matching_entries[default_entry][name] 
-    #     print "\n\n"   
+            
 
            
     
