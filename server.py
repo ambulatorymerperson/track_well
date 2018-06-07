@@ -266,7 +266,7 @@ def write_insight_for_custom_variable(dictionary, string, same_day=None, slp=Non
         sign = -1
 
     if string == "same day":    
-        message = "Out of all the variables you created, getting {} {} is the most relevent to your {} sense of well being.".format(slope, highest_influence, string)
+        message = "Out of all the custom behaviors you created, getting {} {} has the most impact on your {} sense of well being.".format(slope, highest_influence, string)
 
     elif highest_influence == same_day and slp != sign:
         message = "However, the {} {} you get, the better you feel the next day.".format(slope, highest_influence)
