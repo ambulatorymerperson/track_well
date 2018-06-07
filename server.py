@@ -33,6 +33,8 @@ next_day_regression_info = {}
 @app.route('/')
 def show_homepage():
     """show home page"""
+    if 'current_user' in session:
+        return redirect('/my_stats')
 
     return render_template("homepage.html")
 
@@ -43,8 +45,8 @@ def show_homepage():
 def register_process():
     """Registration Form."""
 
-    email_input = request.form['email_input']
-    pw_input = request.form['pw_input']
+    email_input = request.form['register_email']
+    pw_input = request.form['register_pw']
     name = request.form['name']
 
     if User.query.filter_by(ID == email_input).all() != []:

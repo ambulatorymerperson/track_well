@@ -1,67 +1,93 @@
 <!doctype html>
 <html>
 <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <title>Welcome</title>
 </head>
 <body>
-    <h1>Welcome to track well</h1>
-<div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>    
+   
 
+<div class="container">
+    <div class="row">
 
-    {% if 'current_user' not in session %}
-        <h2>login</h2>
-        <form action="/login" method="POST"><br>
-            E-mail: <input type=textbox name="email_input" required></input><br>
+     <h1>Welcome to track well</h1>    
+    </div> 
+    <div class="row">
+            <div class="col-xs-6 col-md-4 col-lg-6"> 
+                <button type=button class="btn" id="login_btn"><h4>login</h4></button>
+            </div>
+            <div class="col-xs-6 col-md-4 col-lg-6"> 
+                <button type=button class="btn" id="register_btn"><h4>register</h4></button><br>
+            </div>    
+    </div>
+    <div class="row"> 
+        <div id="login_form">           
+            <div class="col-xs-9 col-md-1 col-lg-1"> 
+                <br>
+                <p style="margin-top: 5px;">E-mail:</p> 
+                <p style="margin-top: 20px;">Password:</p> 
+            </div>
+            <div class="col-xs-9 col-md-3 col-lg-3"> 
+                <form action="/login" method="POST"><br>
+                <input type=textbox name="email_input" style="margin-bottom: 15px;" required></input><br>
+                <input type="password" name="pw_input" style="margin-bottom: 25px;" required></input>
+                <input type=submit class="btn-sm">
+                </form>
+            </div> 
+        </div>       
+            <div class="col-xs-9 col-md-1 col-lg-1">
+                <br>    
+                <p style="margin-top: 8px;">E-mail: <br>
+                <p style="margin-top: 20px;">Password: </p>
+                <p style="margin-top: 20px;">Name:</p>
+            </div> 
+            <div class="col-xs-9 col-md-3 col-lg-3"> 
+                <form action="/register" method="POST"><br>
+                 <input type=textbox name="register_email" id="r_email" style="margin-bottom: 15px;"></input>  
+                <br>
+                 <input type=textbox name="register_pw" id="r_pw" style="margin-bottom: 15px;"></input>  
+                <input type=textbox name="name" id="name" style="margin-bottom: 25px;"></input> 
+                <input type=submit class="btn-sm"> 
+                </form>  
+            </div>    
+    </div>
+    <div class="row">
+        <div class="col-xs-4 col-md-4 col-lg-4">          
+            <br>
+            
+        </div>
+        <div class="col-xs-4 col-md-4 col-lg-4"> 
+            <!-- <input type=submit class="btn-sm">  -->
+        </div>       
+    </div>
+
         
-            Password: <input type="password" name="pw_input" required></input>
-            <br><input type=submit>
-
-
-        </form>
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             <ul class=flashes>
             {% for category, message in messages %}
+            <div class="row">
                 <li class="{{ category }}">{{ message }}</li>
+            </div>    
             {% endfor %}
             </ul>
         {% endif %}
     {% endwith %}    
         <br><br><br><br>
 
-        Don't have an account?<br><br>
-        Fill out the form below to register<br>
-
-        
-
-        <form action="/register" method="POST"><br>
-            E-mail: <input type=textbox name="email_input" id="email"></input>  
-            <br>
-            Password: <input type=textbox name="pw_input" id="pw"></input>  
-            <br>
-            Name: <input type=textbox name="name" id="name"></input> 
-            <br>
-
-            <input type=submit>
-
-        </form>
-
-        <text id="countdown_feedback"></textarea>
-
-    {% else %}
-        <a href="/my_stats"> View My Stats </a><br>
-        <a href="/record_daily_input"> Add Data </a><br>
-        <a href="/logout"> Logout </a>    
-        
-    {% endif %}
-
-
+ 
 </div>
 
 <script src="https://code.jQuery.com/jQuery-3.2.1.min.js"></script>
 <script>
 "use strict";
+
+$("#login_form").hide();
+
 
 $("#email").keyup(function(){
   $("#countdown_feedback").text("Characters left: " + (30 - $(this).val().length));
@@ -111,7 +137,11 @@ $('#name').on('keyup keydown', function(e){
     });
 
 
+function showForms(evt) {
+    $("#login_form").show();
 
+
+$('#login_btn').on('click', showForms);
 
 
 
