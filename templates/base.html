@@ -2,8 +2,16 @@
 <html>
 <head><!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link href="https://fonts.googleapis.com/css?family=Abril+Fatface|Cabin|Lobster|Quicksand" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Abril+Fatface|Cabin|Lobster|Quicksand|Source+Code+Pro:200|Raleway:200|Inconsolata" rel="stylesheet">
     <title></title>
+<style>
+a {
+    opacity: 0.7;
+}
+a:hover {
+    opacity: 1.0;
+}
+</style>    
 </head>
 <body>
 
@@ -14,19 +22,19 @@
 <!-- Latest compiled JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <div>
-<nav class="navbar navbar-default" style="background-color: white;">
+<nav class="navbar navbar-default" style="background-color: white; border-color: white; letter-spacing: .5px; font-weight: light; padding-left: 2em; padding-top: 2em;">
   <div class="container-fluid">
-    <div class="navbar-header">
-      <a class="navbar-brand" href="/"> {% if 'current_user' not in session %}
+    <!-- <div class="navbar-header">
+      <a class="navbar-brand" href="/" style="font-size: 1.5em; color: black;"> {% if 'current_user' not in session %}
                                             Trackwell
                                         {% elif 'current_user' in session %}
                                             {{ name }}'s Trackwell
                                         {% endif %}    
                                         </a>
-    </div>
+    </div> -->
     <ul class="nav navbar-nav">
         <li class="dropdown">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#">Profile
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" style="font-size: 1.25em; color: black;">profile
             <span class="caret"></span></a>   
             <ul class="dropdown-menu">
               <li><a href="/my_stats">My Stats</a></li>
@@ -35,8 +43,8 @@
               <li><a href="/create_custom_variable">Make A New Variable</a></li>
             </ul>
         </li>
-        <li><a href="/record_daily_input">Add Entry</a></li>
-        <li><a href="/logout">Logout</a></li>
+        <li><a href="/record_daily_input" style="font-size: 1.25em; color: black;">add entry</a></li>
+        <li><a href="/logout" style="font-size: 1.25em; color: black;">logout</a></li>
     </ul>        
 
   </div>

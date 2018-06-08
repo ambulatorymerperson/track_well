@@ -56,19 +56,19 @@
     <div class="row" style="margin-top: 5vh"> 
             <form action="/add_info" id="daily_log" method="POST"> 
             How much did you sleep the night before last?       
-                <input type="number" name="sleep_h" min="0" style="width: 34px;"> hours
+                <input type="number" name="sleep_h" min="0" style="width: 34px;" required> hours
 
-                <input type="number" name="sleep_m" min="0" style="width: 34px;"> minutes
+                <input type="number" name="sleep_m" min="0" style="width: 34px;" required> minutes
 
             <br><br>           
             How much did you exercise yesterday?
-                <input type="number" name="exercise_h" min="0" style="width: 34px;"> hours
+                <input type="number" name="exercise_h" min="0" style="width: 34px;" required> hours
 
-                <input type="number" name="exercise_m" min="0" style="width: 34px;"> minutes
+                <input type="number" name="exercise_m" min="0" style="width: 34px;" required> minutes
             <br><br> 
             What was your screentime yesterday?
-                    <input type="number" name="screentime_h" min="0" style="width: 34px;"> hours
-                    <input type="number" name="screentime_m" min="0" style="width: 34px;"> minutes
+                    <input type="number" name="screentime_h" min="0" style="width: 34px;" required> hours
+                    <input type="number" name="screentime_m" min="0" style="width: 34px;" required> minutes
                     <br><br> 
                 {% if size > 0 %}
                     {% for i in custom_variables.keys() %}
@@ -77,7 +77,7 @@
                         {% else %}     
                             Did you {{ custom_variables[i]["name"]}} yesterday?
                         {% endif %}    
-                        <input type='float' name="{{custom_variables[i]["name"]}}" style="width: 34px;"> {{ custom_variables[i]["unit"]}}<br><br>
+                        <input type='float' name="{{custom_variables[i]["name"]}}" style="width: 34px;" required> {{ custom_variables[i]["unit"]}}<br><br>
                     {% endfor %}   
                 {% endif %}
             Rate your sense of well-being yesterday on a scale from 1-5

@@ -1,11 +1,16 @@
 {% extends "base.html" %}
 <div>
 {% block content %}
-Welcome, {{ name }}!<br>
-We have your email as {{ session['current_user']}}<br>
-Would you like to see the password you set?<br>
-<button type = "button" id = "pass_ask">show password</button>
-<p id = "password"> </p>
+<div class="container">
+    <div class="row" style="margin-top: 30vh">
+        <div class="col-xs-9 col-md-6 col-lg-6" style="border-style: solid; border-width: 1px; border-radius: 5px; border-color: gray; padding: 18px;">
+            Welcome, {{ name }}!<br>
+            We have your email as {{ session['current_user']}}<br>
+            Would you like to see the password you set?<br><p id = "password"> </p>
+            <button type = "button" id = "pass_ask" style="background-color: white;">show password</button>
+        </div>
+    </div>
+</div>        
 <script src="https://code.jQuery.com/jQuery-3.2.1.min.js"></script>
 <script>
 

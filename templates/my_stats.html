@@ -38,12 +38,14 @@
             </div>
         </div> 
     </div>
-    <div class="row" style="padding-bottom: 20vh">
-            <div class="col-xs-12 col-md-9 col-lg-9" style="border-style: solid; border-width: 1px; border-radius: 5px; border-color: gray; padding: 18px;">        
-                <div id="custom_variable_insight">{{ same_day_custom_variable_insight }} {{ next_day_custom_variable_insight }}</div>     
-            </div>  
-     
-    </div>
+    {% if same_day_custom_variable_insight and next_day_custom_variable_insight %}
+        <div class="row" style="padding-bottom: 20vh">
+                <div class="col-xs-12 col-md-9 col-lg-9" style="border-style: solid; border-width: 1px; border-radius: 5px; border-color: gray; padding: 18px;">        
+                    <div id="custom_variable_insight">{{ same_day_custom_variable_insight }} {{ next_day_custom_variable_insight }}</div>     
+                </div>  
+         
+        </div>
+    {% endif %}    
 </div>
 
 

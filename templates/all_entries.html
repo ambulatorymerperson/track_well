@@ -78,10 +78,10 @@
          <table class="table" id="change_entries_table">
             <tbody>
                 <tr>
-                    <th style="width: 20vw; font-size: large; font-family: 'Quicksand', cursive;">date</th>
-                    <th style="width: 20vw; font-size: large; font-family: 'Quicksand', cursive;">sleep</th>
-                    <th style="width: 20vw; font-size: large; font-family: 'Quicksand', cursive;">screentime</th>
-                    <th style="width: 20vw; font-size: large; font-family: 'Quicksand', cursive;">exercise</th>
+                    <th style="width: 20vw; font-size: large;">date</th>
+                    <th style="width: 20vw; font-size: large;">sleep</th>
+                    <th style="width: 20vw; font-size: large;">screentime</th>
+                    <th style="width: 20vw; font-size: large;">exercise</th>
                 </tr>
                 <tr>        
                     <td style="width: 20vw">    
@@ -106,9 +106,9 @@
                 </tr>
                 <tr>
                     {% for variable in custom_variables.keys() %}
-                        <th style="font-size: large; font-family: 'Quicksand', cursive;"> {{ variable }} </th>
+                        <th style="font-size: large;"> {{ variable }} </th>
                     {% endfor %}    
-                    <th style="font-size: large; font-family: 'Quicksand', cursive;">well-being</th>    
+                    <th style="font-size: large;">well-being</th>    
                 </tr>
                 <tr>    
                     {% for variable in custom_variables.keys() %}
@@ -123,7 +123,7 @@
                 </tr>              
             </tbody>
         </table> 
-        <input type=submit style="font-family: 'Quicksand', cursive;" id="submit_data"> 
+        <input type=submit id="submit_data"> 
         </form>  
     </div>          
 

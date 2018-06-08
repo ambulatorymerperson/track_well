@@ -102,10 +102,12 @@ def show_user_stats():
 
     users_variables = Custom_Variable_Info.query.filter(Custom_Variable_Info.user_id==current_user).all()
 
-    records_dict = make_custom_v_and_wellness_dict(users_variables)
+    if users_variables:
+        records_dict = make_custom_v_and_wellness_dict(users_variables)
+        custom_variables_with_next_day_wellness = get_custom_v_next_day_effects(users_variables, current_user)
 
-    custom_variables_with_next_day_wellness = get_custom_v_next_day_effects(users_variables, current_user)
-
+    else:    
+        custom_variables_with_next_day_wellness = None
 
     if len(user_stats) < 1:
         flash('You have not entered any data yet. Please enter data in order to view behavioral graphs.')
@@ -146,14 +148,19 @@ def show_user_stats():
         for i in range(len(independent_variables[j])) and range(len(well_being_rating)):
             regression_lines[j].append([independent_variables[j][i], well_being_rating[i]])
     
-    same_day_custom_v_r_squared = get_custom_r_squared(records_dict)
+    if records_dict:
+        same_day_custom_v_r_squared = get_custom_r_squared(records_dict)
+    
+        next_day_custom_v_r_squared = get_custom_r_squared(custom_variables_with_next_day_wellness)
+    
+    if same_day_custom_v_r_squared:
+        same_day_custom_variable_insight, same_day_cv, sd_slope = write_insight_for_custom_variable(same_day_custom_v_r_squared, "same day")
+    if next_day_custom_v_r_squared:
+        next_day_custom_variable_insight, next_day_cv, nd_slp = write_insight_for_custom_variable(next_day_custom_v_r_squared, "next day", same_day_cv, sd_slope)
 
-    next_day_custom_v_r_squared = get_custom_r_squared(custom_variables_with_next_day_wellness)
-
-    same_day_custom_variable_insight, same_day_cv, sd_slope = write_insight_for_custom_variable(same_day_custom_v_r_squared, "same day")
-
-    next_day_custom_variable_insight, next_day_cv, nd_slp = write_insight_for_custom_variable(next_day_custom_v_r_squared, "next day", same_day_cv, sd_slope)
-
+    else:    
+        same_day_custom_variable_insight = None
+        next_day_custom_variable_insight = None 
 
     for lst in independent_variables:    
         slope, intercept, r_value, p_value, std_err = stats.linregress(lst, well_being_rating)
@@ -229,6 +236,9 @@ def get_custom_r_squared(dictionary):
     r_dictionary = {}
             
     for v in dictionary.keys():
+
+        if len(dictionary[v]) <= 2:
+            break  
         behavior = []
         wellness = []
         for lst in dictionary[v]:
@@ -246,7 +256,9 @@ def get_custom_r_squared(dictionary):
 
 
 
- 
+    if not r_dictionary.values():
+        return None
+
     return r_dictionary     
 
 def write_insight_for_custom_variable(dictionary, string, same_day=None, slp=None):
@@ -287,6 +299,8 @@ def make_custom_v_and_wellness_dict(users_variables):
     for item in users_variables:
         behavior_and_well_being_lst = []
         records = Custom_Variable_Daily_Entry.query.filter(Custom_Variable_Daily_Entry.variable_info==item.variable_id).all()
+        if not records:
+            return None
         for entry in records:
             day = []
             day.append(entry.custom_variable_amount)
