@@ -143,17 +143,16 @@ $('#name').on('keyup keydown', function(e){
 
 
 function showLoginForms(evt) {
-    $("#login_form").show();
+    $("#login_form").toggle();
 }
 
 $('#login_btn').on('click', showLoginForms);
 
 function showRForms(evt) {
-    $("#register_form").show();
+    $("#register_form").toggle();
 }
 
 $('#register_btn').on('click', showRForms);
-
 
 
 

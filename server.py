@@ -234,9 +234,8 @@ def show_user_stats():
 def get_custom_r_squared(dictionary):
 
     r_dictionary = {}
-            
+    print dictionary        
     for v in dictionary.keys():
-
         if len(dictionary[v]) <= 2:
             break  
         behavior = []
