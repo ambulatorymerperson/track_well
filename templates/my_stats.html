@@ -14,32 +14,39 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
 <script src="//rawgithub.com/phpepe/highcharts-regression/master/highcharts-regression.js"> </script>
 
-<div class="container">
+<div class="container" style="margin-left: 20vw; margin-right: 20vw; margin-bottom: 15vh;">
     <div class="row">
-        <h1 id="name">{{ name }}'s stats</h1><br>
-        <div class="col-xs-12 col-md-9 col-lg-12">
-            <div id="same_day_insight"></div>
-            <div id="chart-A" class="chart"
+        <h1 id="name" style="margin-bottom: 1em">{{ name }}'s stats</h1><br>
+        <div class="col-xs-12 col-md-9 col-lg-9">
+            <div id="same_day_insight" style="margin-bottom: 2em"></div>
+            <div id="chart-A" class="chart" style="margin-bottom: 10vh">
             </div> <!-- Container for Chart A -->
             <div class="spacer"></div><div id="text"></div>
-        </div>    
-        <div class="col-xs-12 col-md-9 col-lg-12">    
-            <div id="next_day_insight"></div>
+        </div> 
+    </div>
+    <div class="row" style="margin-bottom: 10vh">       
+        <div class="col-xs-12 col-md-9 col-lg-9">    
+            <div id="next_day_insight" style="margin-bottom: 2em"></div>
             <div id="chart-B" class="chart"></div> <!-- Container for Chart B -->
             <div id="variable" class="chart"></div>
-        </div>    
-        <div class="col-xs-12 col-md-9 col-lg-6">    
-            <div id="test" class="chart">
-            <canvas id="myChart" width="400" height="400"></canvas></div>
-            <div class="margin-bottom-sm-5 margin-bottom-md-5 margin-bottom-lg-5" id="custom_variable_insight">{{ same_day_custom_variable_insight }} {{ next_day_custom_variable_insight }}</div>
-            <div class="pb-5"></div>   
-        </div>    
         </div>
+    </div>
+    <div class="row">         
+        <div class="col-xs-12 col-md-5 col-lg-5">    
+            <div id="test" class="chart">
+                <canvas id="myChart"></canvas>
+            </div>
+        </div> 
+    </div>
+    <div class="row" style="padding-bottom: 20vh">
+            <div class="col-xs-12 col-md-9 col-lg-9" style="border-style: solid; border-width: 1px; border-radius: 5px; border-color: gray; padding: 18px;">        
+                <div id="custom_variable_insight">{{ same_day_custom_variable_insight }} {{ next_day_custom_variable_insight }}</div>     
+            </div>  
+     
     </div>
 </div>
 
-<br><br><br><br>            
-<span class="border-bottom"></span>
+
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script>
 "use strict";
@@ -81,14 +88,11 @@ $(function () {
             }
         },
         legend: {
-                layout: 'vertical',
-                align: 'left',
+                 align: 'right',
                 verticalAlign: 'top',
-                x: 100,
-                y: 70,
-                floating: true,
-                backgroundColor: '#FFFFFF',
-                borderWidth: 1
+                layout: 'vertical',
+                x: 0,
+                y: 100
             },
 
    
@@ -97,30 +101,30 @@ $(function () {
             regressionSettings: {
                 type: 'polynomial',
                 color:  'rgba(45, 90, 255, .9)',
-                name: "%eq | r2: %r" 
+                name: "r2: %r" 
             },
             name: 'sleep',
-            color: 'rgba(223, 83, 83, .5)',
+            color: 'rgba(45, 90, 255, .4)',
             data: sleep 
             },
 
             {regression: true ,
             regressionSettings: {
                 type: 'polynomial',
-                color:  'rgba(40, 100, 2, .9)',
-                name: "%eq | r2: %r" 
+                color:  'rgb(204, 102, 255)',
+                name: "r2: %r" 
             },
             
             name: 'exercise',
-            color: 'rgba(223, 83, 83, .5)',
+            color: 'rgba(204, 102, 255, .4)',
             data: exercise 
             },
 
             {regression: true ,
             regressionSettings: {
                 type: 'polynomial',
-                color:  'rgba(60, 100, 2, 10)',
-                name: "%eq | r2: %r" 
+                color:  'rgb(223, 90, 40)',
+                name: "r2: %r" 
             },
             
             name: 'screentime',
@@ -159,14 +163,11 @@ $(function () {
             }
         },
         legend: {
-                layout: 'vertical',
-                align: 'left',
+                align: 'right',
                 verticalAlign: 'top',
-                x: 100,
-                y: 70,
-                floating: true,
-                backgroundColor: '#FFFFFF',
-                borderWidth: 1
+                layout: 'vertical',
+                x: 0,
+                y: 100
             },
 
    
@@ -175,30 +176,30 @@ $(function () {
             regressionSettings: {
                 type: 'polynomial',
                 color:  'rgba(45, 90, 255, .9)',
-                name: "%eq | r2: %r" 
+                name: "r2: %r" 
             },
             name: 'sleep',
-            color: 'rgba(223, 83, 83, .5)',
+            color: 'rgba(45, 90, 255, .5)',
             data: sleep_points 
             },
 
             {regression: true ,
             regressionSettings: {
                 type: 'polynomial',
-                color:  'rgba(40, 100, 2, .9)',
-                name: "%eq | r2: %r" 
+                color:  'rgb(204, 102, 255)',
+                name: "r2: %r" 
             },
             
             name: 'exercise',
-            color: 'rgba(223, 83, 83, .5)',
+            color: 'rgba(204, 102, 255, .4)',
             data: exercise_points 
             },
 
             {regression: true ,
             regressionSettings: {
                 type: 'polynomial',
-                color:  'rgba(60, 100, 2, 10)',
-                name: "%eq | r2: %r" 
+                color:  'rgb(223, 90, 40)',
+                name: "r2: %r" 
             },
             
             name: 'screentime',
@@ -211,7 +212,7 @@ $(function () {
 
 
 });
-
+$("#myChart").hide();
 
 let i = 0
 for (let variable of json_custom_variables) {   
@@ -229,10 +230,10 @@ for (let variable of json_custom_variables) {
             }]
         }
     }
-});
+})
     $("#test").append(myLineChart);
     i ++;
-}
+};
 
 for (let variable of json_custom_variables){
     $("#test").append(variable);

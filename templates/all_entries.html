@@ -1,8 +1,11 @@
 {% extends "base.html" %}
 <div>
 {% block content %}    
-</div>   
-<div class="container">
+</div>
+<style>
+ .table-responsive { width:70vw; height:70vh; max-height:60vh; padding: 3px; overflow-y:auto; overflow-x:hidden; }
+</style>   
+<div class="container" style="margin-top: 10vh">
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             <ul class=flashes>
@@ -17,7 +20,8 @@
   {% for i in custom_variables %}
 
     {{i["name"]}}  
-  {% endfor %}                                                                         
+  {% endfor %} 
+
   <div class="table-responsive">          
   <table class="table" id="all_entries_table">
     <thead>
@@ -65,48 +69,61 @@
    
         To change an entry, select the corresponding entry number.
     <form action="/change_row_in_daily_inputs" method="POST">    
-        <input type='number' name='change_entry_number' id='change_entry_number' value="0" min="1"> /
+        <input type='number' name='change_entry_number' id='change_entry_number' min="1"> /
 
         <button type=button id="change_entry_btn">Change Entry</button>
     
 
-    <div class="table-responsive">          
+    <div class="table-responsive" style="margin-top: 5vh">          
          <table class="table" id="change_entries_table">
             <tbody>
                 <tr>
-                
-                        <td style="width: 150px;">date:    
+                    <th style="width: 20vw; font-size: large; font-family: 'Quicksand', cursive;">date</th>
+                    <th style="width: 20vw; font-size: large; font-family: 'Quicksand', cursive;">sleep</th>
+                    <th style="width: 20vw; font-size: large; font-family: 'Quicksand', cursive;">screentime</th>
+                    <th style="width: 20vw; font-size: large; font-family: 'Quicksand', cursive;">exercise</th>
+                </tr>
+                <tr>        
+                    <td style="width: 20vw">    
                         <select name="date" id="date">
                         {% for date in last_30_days %}    
                             <option value={{ date.month }}-{{ date.day }}-{{ date.year }}>{{ date.month }}-{{ date.day }}-{{ date.year }}</option>
                         {% endfor %}    
-                        </select></td> 
-                        <td style="width: 186px;"><strong>sleep</strong>:  
-                        <input type='number' name='sleep_hours' id='sleep_hours' placeholder='100' style="width: 34px;" min="0" max="23" required>  hrs 
-                        <input type='number' name='sleep_minutes' id='sleep_minutes' placeholder='100' style="width: 34px;" min="0" max="59" required>  min
-                        </td>    
-                        <td style="width: 186px;">   
-                        screentime:
-                        <input type='number' name='screentime_hours' id='screentime_hours' placeholder='100' style="width: 34px;" min="0" max="18" required>  hrs 
-                        <input type='number' name='screentime_minutes' id='screentime_minutes' style="width: 34px;" placeholder='100' min="0" max="59" required>  min
+                        </select>
+                    </td> 
+                    <td style="width: 20vw"> 
+                        <input type='number' name='sleep_hours' id='sleep_hours' min="0" max="23" style="width: 5vw;" required>  hrs 
+                        <input type='number' name='sleep_minutes' id='sleep_minutes' min="0" max="59" style="width: 5vw;" required>  min
+                    </td>    
+                    <td style="width: 20vw">
+                        <input type='number' name='screentime_hours' id='screentime_hours'  min="0" max="18" style="width: 5vw;" required>  hrs 
+                        <input type='number' name='screentime_minutes' id='screentime_minutes' min="0" max="59" style="width: 5vw;" required>  min
+                    </td>
+                    <td style="width: 20vw">
+                        <input type='number' name='exercise_hours' id='exercise_hours'  min="0" max="10" style="width: 5vw;" required>  hrs 
+                        <input type='number' name='exercise_minutes' id='exercise_minutes'  min="0" max="59" style="width: 5vw;" required>  min
+                    </td>
+                </tr>
+                <tr>
+                    {% for variable in custom_variables.keys() %}
+                        <th style="font-size: large; font-family: 'Quicksand', cursive;"> {{ variable }} </th>
+                    {% endfor %}    
+                    <th style="font-size: large; font-family: 'Quicksand', cursive;">well-being</th>    
+                </tr>
+                <tr>    
+                    {% for variable in custom_variables.keys() %}
+                        <td>
+                            <input type='float' name="{{ variable }}" id="{{ variable }}" style="width: 5vw;"> {{ custom_variables[variable]['unit'] }}
                         </td>
-                        <td style="width: 186px;">exercise:
-                        <input type='number' name='exercise_hours' id='exercise_hours' style="width: 34px;" placeholder='100' min="0" max="10" required>  hrs 
-                        <input type='number' name='exercise_minutes' id='exercise_minutes' style="width: 34px;" placeholder='100' min="0" max="59" required>  min
-                        </td> 
-                        {% for variable in custom_variables.keys() %}
-                            <td style="width: 186px;"> {{ variable }}:
-                                <input type='float' name="{{ variable }}" id="{{ variable }}" style="width: 34px;"> {{ custom_variables[variable]['unit'] }}
-                            </td>
-                        {% endfor %}        
-                        <td style="width: 130px;">
-                        <strong>well-being</strong>:
-                        <input type='number' name='wellness_score' id='wellness_score' min="1" max="5" style="width: 30px;" placeholder='100' required></td>  
+                    {% endfor %}        
+                    <td>
+                        <input type='number' name='wellness_score' id='wellness_score' min="1" max="5" style="width: 5vw;" placeholder='100' required>
+                    </td>  
 
                 </tr>              
             </tbody>
         </table> 
-        <input type=submit id="submit_data"> 
+        <input type=submit style="font-family: 'Quicksand', cursive;" id="submit_data"> 
         </form>  
     </div>          
 
