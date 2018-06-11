@@ -4,9 +4,19 @@
 </head>
 <body>
 {% block content %}    
-<div class="container">
-  <div class="row" style="margin-top: 30vh">
-    <h1>Create an annoying variable</h1>
+<div class="container"> 
+  <div class="row">
+    <div class="col-xs-9 col-md-3 col-lg-3" style="margin-left: 55vw; margin-top: 10vh;">
+      <article id="variable_creation_tips" style="background-color: black; color: white; padding:10px; border-radius:10px; opacity: .6;">
+        <ul style="padding-right:2em;">
+          <li>choose a behavior that you do regularly, or intend to do regularly</li>
+          <li>when naming your variable, choose a verb, or a combination of verbs that describes an action</li>
+        </ul>
+      <article>
+    </div> 
+  </div> 
+   <div class="row" style="margin-top: 5vh;"> 
+    <h1>make your own variable</h1>
 
     <form action="/add_new_variable" method="POST">
         Variable Name:<input type="text" name="variable_name" id="custom_variable"></input>
@@ -16,12 +26,20 @@
             <option value="mg">mg</option>
             <option value="oz">oz</option>
             <option value="cups">cups</option>
+            <option value="bool">mph</option>
+            <option value="bool">miles</option>
+            <option value="bool">times</option>
             <option value="bool">Yes/No</option>
         </select>
         <input type=submit id="submit_data"> 
     </form>
     <text id="countdown_feedback"></text>
   </div>
+  <div class="row" style="margin-top: 25vh">
+    <div class="col-xs-9 col-md-3 col-lg-3" style="margin-left: 70vw;">
+     <img id="question_mark" src="static/questionmark.jpg" style="height: 5vh">
+    </div> 
+  </div> 
 </div>  
           
 
@@ -32,6 +50,8 @@
 $("#custom_variable").keyup(function(){
   $("#countdown_feedback").text("Characters left: " + (29 - $(this).val().length));
 });
+
+
 
 $('#custom_variable').on('keyup keydown', function(e){
     console.log($(this).val().length > 29)

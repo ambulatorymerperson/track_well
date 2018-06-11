@@ -49,7 +49,7 @@ def register_process():
     pw_input = request.form['register_pw']
     name = request.form['name']
 
-    if User.query.filter_by(ID == email_input).all() != []:
+    if User.query.filter(User.ID == email_input).all() != []:
         flash('That email is already attached to an account.')
         return redirect('/')       
     else:
@@ -102,8 +102,10 @@ def show_user_stats():
 
     users_variables = Custom_Variable_Info.query.filter(Custom_Variable_Info.user_id==current_user).all()
 
+    print users_variables
     if users_variables:
         records_dict = make_custom_v_and_wellness_dict(users_variables)
+        print records_dict
         custom_variables_with_next_day_wellness = get_custom_v_next_day_effects(users_variables, current_user)
 
     else:    
@@ -148,11 +150,14 @@ def show_user_stats():
         for i in range(len(independent_variables[j])) and range(len(well_being_rating)):
             regression_lines[j].append([independent_variables[j][i], well_being_rating[i]])
     
-    if records_dict:
+
+    if records_dict != None:
         same_day_custom_v_r_squared = get_custom_r_squared(records_dict)
-    
+
+
         next_day_custom_v_r_squared = get_custom_r_squared(custom_variables_with_next_day_wellness)
     
+    print same_day_custom_v_r_squared
     if same_day_custom_v_r_squared:
         same_day_custom_variable_insight, same_day_cv, sd_slope = write_insight_for_custom_variable(same_day_custom_v_r_squared, "same day")
     if next_day_custom_v_r_squared:
@@ -298,8 +303,12 @@ def make_custom_v_and_wellness_dict(users_variables):
     for item in users_variables:
         behavior_and_well_being_lst = []
         records = Custom_Variable_Daily_Entry.query.filter(Custom_Variable_Daily_Entry.variable_info==item.variable_id).all()
-        if not records:
-            return None
+        print records
+        print type(records) 
+        print len(records)
+        if len(records) < 2:
+            print "\n None \n"
+            break
         for entry in records:
             day = []
             day.append(entry.custom_variable_amount)
