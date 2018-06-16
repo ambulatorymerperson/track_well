@@ -48,7 +48,7 @@
                 {% for i in custom_variables.keys() %}       
                     {% for key in matching_entries %}
                         {% if key == entry['date'] %}
-                            {% if matching_entries[key][i] > 0 %}    
+                            {% if matching_entries[key][i] >= 0 %}    
                                 <td id="cv_{{ loop.index}}">{{ matching_entries[key][i] }} {{ custom_variables[i]['unit'] }}</td>
                             {% else %}
                                 <td>*</td>    

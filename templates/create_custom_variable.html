@@ -5,7 +5,7 @@
 <body>
 {% block content %}    
 <div class="container"> 
-  <div class="row">
+<!--   <div class="row">
     <div class="col-xs-9 col-md-3 col-lg-3" style="margin-left: 55vw; margin-top: 10vh;">
       <article id="variable_creation_tips" style="background-color: black; color: white; padding:10px; border-radius:10px; opacity: .6;">
         <ul style="padding-right:2em;">
@@ -14,8 +14,8 @@
         </ul>
       <article>
     </div> 
-  </div> 
-   <div class="row" style="margin-top: 5vh;"> 
+  </div>  -->
+   <div class="row" style="margin-top: 15vh;"> 
     <h1>make your own variable</h1>
 
     <form action="/add_new_variable" method="POST">
@@ -26,9 +26,10 @@
             <option value="mg">mg</option>
             <option value="oz">oz</option>
             <option value="cups">cups</option>
-            <option value="bool">mph</option>
-            <option value="bool">miles</option>
-            <option value="bool">times</option>
+            <option value="mph">mph</option>
+            <option value="lbs">lbs</option>
+            <option value="miles">miles</option>
+            <option value="times">times</option>
             <option value="bool">Yes/No</option>
         </select>
         <input type=submit id="submit_data"> 
@@ -36,9 +37,6 @@
     <text id="countdown_feedback"></text>
   </div>
   <div class="row" style="margin-top: 25vh">
-    <div class="col-xs-9 col-md-3 col-lg-3" style="margin-left: 70vw;">
-     <img id="question_mark" src="static/questionmark.jpg" style="height: 5vh">
-    </div> 
   </div> 
 </div>  
           

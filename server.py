@@ -151,12 +151,12 @@ def show_user_stats():
             regression_lines[j].append([independent_variables[j][i], well_being_rating[i]])
     
 
-    if records_dict != None:
+    if records_dict:
+        print "hello"
         same_day_custom_v_r_squared = get_custom_r_squared(records_dict)
-
-
         next_day_custom_v_r_squared = get_custom_r_squared(custom_variables_with_next_day_wellness)
     
+    print "same day custom variable r squared"
     print same_day_custom_v_r_squared
     if same_day_custom_v_r_squared:
         same_day_custom_variable_insight, same_day_cv, sd_slope = write_insight_for_custom_variable(same_day_custom_v_r_squared, "same day")
@@ -242,7 +242,7 @@ def get_custom_r_squared(dictionary):
     print dictionary        
     for v in dictionary.keys():
         if len(dictionary[v]) <= 2:
-            break  
+            pass   
         behavior = []
         wellness = []
         for lst in dictionary[v]:
@@ -289,6 +289,8 @@ def write_insight_for_custom_variable(dictionary, string, same_day=None, slp=Non
     elif highest_influence == same_day and slp != sign:
         message = "However, the {} {} you get, the better you feel the next day.".format(slope, highest_influence)
     
+    elif highest_influence ==same_day and slp == sign:
+        message = "Additionally, getting {} {} tends to correlate with you feeling better the next day.".format(slope, highest_influence)
     else:
         message = "The {} {} you get, the better you feel the next day.".format(slope, highest_influence)
 
@@ -598,38 +600,24 @@ def create_matching_entries_dict(all_info, custom_variables):
 
 
 def find_custom_variable_amounts(input_ids_to_check, date_to_check, matching_entries):
-    print "checking",
-    print input_ids_to_check     
+   
     # gets all the variable entries with a given input id. does this for each entry  
     cv_query = Custom_Variable_Daily_Entry.query.filter(Custom_Variable_Daily_Entry.daily_default_v_input_id==input_ids_to_check).all()
-    print cv_query
+
     for item in cv_query:
         # get the information associated with that variable
         custom_v = Custom_Variable_Info.query.filter(Custom_Variable_Info.variable_id==item.variable_info).one()
         #its name
         name = custom_v.variable_name
-        print name
+
         for entry_day in matching_entries:
             # if date of input is the same as matching_entries key
             if entry_day == date_to_check:
-                print "\ndate:"
-                print date_to_check
-                print "\n cv_query"
-                print cv_query
                 # how much was recorded for this entry
                 amount = item.custom_variable_amount
-                print "\namount\n"
-                print amount 
                 matching_entries[date_to_check][name] = matching_entries[date_to_check].get('name', 0) + amount 
             else:
                 pass      
-        print "\n\n\n"
-        print "custom variable query"
-        print cv_query 
-    print "\n\n\n"
-    print "\nmatching entries dictionary\n"
-    print matching_entries
-
 
     return matching_entries         
             
@@ -660,7 +648,6 @@ def add_new_variable():
     variable_name = request.form.get('variable_name')
     variable_name = str(variable_name)
     variable_name = variable_name.rstrip()
-    print len(variable_name)
     unit_type = request.form.get('unit_type')
     current_user = session['current_user']
     new_custom_variable = Custom_Variable_Info(user_id=current_user, variable_name=variable_name, variable_units=unit_type)
@@ -700,7 +687,7 @@ def logout():
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the
     # point that we invoke the DebugToolbarExtension
-    app.debug = True
+    app.debug = False
     # make sure templates, etc. are not cached in debug mode
     app.jinja_env.auto_reload = app.debug
 
