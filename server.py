@@ -152,12 +152,9 @@ def show_user_stats():
     
 
     if records_dict:
-        print "hello"
         same_day_custom_v_r_squared = get_custom_r_squared(records_dict)
         next_day_custom_v_r_squared = get_custom_r_squared(custom_variables_with_next_day_wellness)
     
-    print "same day custom variable r squared"
-    print same_day_custom_v_r_squared
     if same_day_custom_v_r_squared:
         same_day_custom_variable_insight, same_day_cv, sd_slope = write_insight_for_custom_variable(same_day_custom_v_r_squared, "same day")
     if next_day_custom_v_r_squared:
@@ -241,22 +238,24 @@ def get_custom_r_squared(dictionary):
     r_dictionary = {}
     print dictionary        
     for v in dictionary.keys():
-        if len(dictionary[v]) <= 2:
-            pass   
-        behavior = []
-        wellness = []
-        for lst in dictionary[v]:
-            behavior.append(lst[0])
-            wellness.append(lst[1]) 
-        slope, intercept, r_value, p_value, std_err = stats.linregress(behavior, wellness)
-        r_squared = r_value**2
-        r_dictionary[v] = {}
-        n = len(behavior)
-        if n > 2:
-            adjusted_r_squared = 1 - (((1 - r_squared) * (n-1))/(n-1-1))
-            r_dictionary[v]['adjusted_r_squared'] = adjusted_r_squared 
-        r_dictionary[v]['r_squared'] = r_squared
-        r_dictionary[v]['slope'] = slope
+        if len(dictionary[v]) >= 2:
+            print dictionary[v]  
+            behavior = []
+            wellness = []
+            for lst in dictionary[v]:
+                behavior.append(lst[0])
+                wellness.append(lst[1]) 
+            print behavior
+            print wellness     
+            slope, intercept, r_value, p_value, std_err = stats.linregress(behavior, wellness)
+            r_squared = r_value**2
+            r_dictionary[v] = {}
+            n = len(behavior)
+            if n > 2:
+                adjusted_r_squared = 1 - (((1 - r_squared) * (n-1))/(n-1-1))
+                r_dictionary[v]['adjusted_r_squared'] = adjusted_r_squared 
+            r_dictionary[v]['r_squared'] = r_squared
+            r_dictionary[v]['slope'] = slope
 
 
 
@@ -687,7 +686,7 @@ def logout():
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the
     # point that we invoke the DebugToolbarExtension
-    app.debug = False
+    app.debug = True
     # make sure templates, etc. are not cached in debug mode
     app.jinja_env.auto_reload = app.debug
 
