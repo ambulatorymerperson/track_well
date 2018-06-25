@@ -5,6 +5,7 @@ from jinja2 import StrictUndefined
 from math import (sqrt, modf)
 from scipy import stats
 import numpy as np
+from passlib.hash import pbkdf2_sha256
 
 
 from flask import (Flask, render_template, redirect, request, flash,
@@ -53,12 +54,14 @@ def register_process():
         flash('That email is already attached to an account.')
         return redirect('/')       
     else:
-        new_user = User(ID = email_input, password=pw_input, name=name)
+        saved_password = pbkdf2_sha256.hash(pw_input)
+        new_user = User(ID = email_input, password=saved_password, name=name)
         db.session.add(new_user)
         db.session.commit()
         session['current_user'] = email_input 
 
     return redirect('/registration_confirmation')
+
 
 @app.route("/registration_confirmation")
 def confirm_registration():
@@ -78,16 +81,27 @@ def login():
     email_input = request.form['email_input']
     pw_input = request.form['pw_input']
 
-    if User.query.filter(User.ID == email_input, User.password == pw_input).all() != []:
-        user = User.query.filter(User.ID == email_input).one()
-        session['current_user'] = user.ID
-        return redirect("/my_stats")
-    elif User.query.filter(User.ID == email_input).all() == []:
+    if User.query.filter(User.ID == email_input).all() == []:
         flash('That email is not in our database. Please check your spelling, or use the form below to register', 'error')
         return redirect("/")
-    elif User.query.filter(User.ID == email_input, User.password == pw_input).all()  == []:
-        flash('Invalid password. Please try again.', 'error')
-        return redirect("/")    
+    elif User.query.filter(User.ID == email_input, User.password == pw_input).all() != []:
+        user = User.query.filter(User.ID == email_input).one()
+        session['current_user'] = user.ID
+        return redirect("/my_stats")   
+    
+    # elif User.query.filter(User.ID == email_input, User.password == pw_input).all()  == []:
+    #     flash('Invalid password. Please try again.', 'error')
+    #     return redirect("/")
+    else: 
+        user = User.query.filter(User.ID==email_input).one() 
+        if pbkdf2_sha256.verify(pw_input, user.password):
+            session['current_user'] = user.ID
+            return redirect("/my_stats")
+        else:
+            flash('Invalid password. Please try again.', 'error')
+            return redirect("/")         
+
+ 
 
 
 @app.route("/my_stats")
@@ -486,10 +500,10 @@ def add_info():
 def change_records():
 
 
+
     current_user = session['current_user']
 
     date = request.form.get('date')
-   # date = "{}-{}-{}".format(when.month, when.day, when.year) 
     sleep_h = request.form.get('sleep_hours')
     sleep_m = request.form.get('sleep_minutes')
     exercise_h = request.form.get('exercise_hours')
@@ -654,28 +668,7 @@ def add_new_variable():
     db.session.commit()
 
     return redirect('/see_all_records')
-# @app.route("/check_info")
-# def check_info():  
-#     current_user = session['current_user']
 
-#     sleep_h = request.args.get('sleep_h', '')
-#     sleep_m = request.args.get('sleep_m')
-#     exercise_h =  request.args.get('exercise_h')
-#     exercise_m = request.args.get('exercise_m')
-#     screentime_h = request.args.get('screentime_h')
-#     screentime_m = request.args.get('screentime_m')
-#     wellness_score = request.args.get('wellness_score')
-#     yesterday = date.today() - timedelta(1)
-
-
-
-#     sleep_t = round((float(sleep_m)/60) + float(sleep_h), 2)
-#     exercise_t = round((float(exercise_m)/60) + float(exercise_h), 2)
-#     screentime_t = round((float(screentime_m)/60) + float(screentime_h), 2)
-
-
-
-#     return render_template("confirm_input.html", sleep_h=sleep_h, sleep_m=sleep_m, sleep_t=sleep_t, exercise_h=exercise_h, exercise_m=exercise_m, exercise_t=exercise_t, screentime_h=screentime_h, screentime_m=screentime_m, screentime_t=screentime_t, wellness_score=wellness_score, yesterday=yesterday)     
 
 @app.route("/logout")
 def logout():

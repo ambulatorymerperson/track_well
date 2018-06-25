@@ -45,7 +45,7 @@ class User(db.Model):
 
 
     ID = db.Column(db.String(30), primary_key=True, nullable=False)
-    password = db.Column(db.String(15), nullable=False)
+    password = db.Column(db.String(100), nullable=False)
     name = db.Column(db.String(15), nullable=False)
     first_entry_at = db.Column(db.DateTime(15), nullable=True)
 
