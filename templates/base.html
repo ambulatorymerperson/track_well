@@ -15,6 +15,27 @@ a {
 a:hover {
     opacity: 1.0;
 }
+/* unvisited link */
+a:link {
+    color: rgb(37, 219, 201);
+}
+
+/* visited link */
+a:visited {
+    color: green;
+}
+
+/* mouse over link */
+a:hover {
+    color: rgb(37, 219, 201);
+    text-decoration: none;
+
+}
+
+/* selected link */
+a:active {
+    color: yellow;
+}
 </style>    
 </head>
 <body>
@@ -28,14 +49,7 @@ a:hover {
 <div>
 <nav class="navbar navbar-default" style="background-color: white; border-color: white; letter-spacing: .5px; font-weight: light; padding-left: 2em; padding-top: 2em;">
   <div class="container-fluid">
-    <!-- <div class="navbar-header">
-      <a class="navbar-brand" href="/" style="font-size: 1.5em; color: black;"> {% if 'current_user' not in session %}
-                                            Trackwell
-                                        {% elif 'current_user' in session %}
-                                            {{ name }}'s Trackwell
-                                        {% endif %}    
-                                        </a>
-    </div> -->
+
     <ul class="nav navbar-nav">
         <li class="dropdown">
             <a class="dropdown-toggle" data-toggle="dropdown" href="#" style="font-size: 1.25em; color: black;">profile
@@ -45,6 +59,7 @@ a:hover {
               <li><a href="/registration_confirmation">Account Info</a></li>
               <li><a href="/see_all_records">View All Entries</a></li>
               <li><a href="/create_custom_variable">Make A New Variable</a></li>
+              <li><a href="/delete_custom_variable">Delete A Custom Variable</a></li>
             </ul>
         </li>
         <li><a href="/record_daily_input" style="font-size: 1.25em; color: black;">add entry</a></li>

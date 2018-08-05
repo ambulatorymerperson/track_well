@@ -43,7 +43,6 @@ class User(db.Model):
 
     __tablename__ = "users"
 
-
     ID = db.Column(db.String(30), primary_key=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
     name = db.Column(db.String(15), nullable=False)

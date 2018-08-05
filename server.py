@@ -50,14 +50,31 @@ def register_process():
     pw_input = request.form['register_pw']
     name = request.form['name']
 
-    if User.query.filter(User.ID == email_input).all() != []:
-        flash('That email is already attached to an account.')
-        return redirect('/')       
+    sql = """SELECT *
+             FROM users
+             WHERE "ID" = :email
+          """
+
+    cursor = db.session.execute(sql, {'email': email_input})
+
+    result = cursor.fetchone()      
+    print result
+    if result:
+        flash('The email {} is already attached to an account.'.format(email_input))
+        return redirect('/')
+
     else:
         saved_password = pbkdf2_sha256.hash(pw_input)
-        new_user = User(ID = email_input, password=saved_password, name=name)
-        db.session.add(new_user)
+        sql = """INSERT INTO users ("ID", password, name)
+         VALUES (:ID, :password, :name)"""
+
+        db.session.execute(sql, {'ID': email_input,
+                         'password': pw_input,
+                         'name': name,
+                         })
+
         db.session.commit()
+
         session['current_user'] = email_input 
 
     return redirect('/registration_confirmation')
@@ -70,7 +87,9 @@ def confirm_registration():
         return redirect('/')
 
     user_email = session['current_user']
+    print user_email
     user = User.query.filter(User.ID == user_email).one()
+    print user 
     name = user.name
     password = user.password    
 
@@ -87,11 +106,8 @@ def login():
     elif User.query.filter(User.ID == email_input, User.password == pw_input).all() != []:
         user = User.query.filter(User.ID == email_input).one()
         session['current_user'] = user.ID
-        return redirect("/my_stats")   
+        return redirect("/my_stats")
     
-    # elif User.query.filter(User.ID == email_input, User.password == pw_input).all()  == []:
-    #     flash('Invalid password. Please try again.', 'error')
-    #     return redirect("/")
     else: 
         user = User.query.filter(User.ID==email_input).one() 
         if pbkdf2_sha256.verify(pw_input, user.password):
@@ -249,18 +265,14 @@ def show_user_stats():
 
 def get_custom_r_squared(dictionary):
 
-    r_dictionary = {}
-    print dictionary        
+    r_dictionary = {}     
     for v in dictionary.keys():
         if len(dictionary[v]) >= 2:
-            print dictionary[v]  
             behavior = []
             wellness = []
             for lst in dictionary[v]:
                 behavior.append(lst[0])
-                wellness.append(lst[1]) 
-            print behavior
-            print wellness     
+                wellness.append(lst[1])    
             slope, intercept, r_value, p_value, std_err = stats.linregress(behavior, wellness)
             r_squared = r_value**2
             r_dictionary[v] = {}
@@ -318,9 +330,6 @@ def make_custom_v_and_wellness_dict(users_variables):
     for item in users_variables:
         behavior_and_well_being_lst = []
         records = Custom_Variable_Daily_Entry.query.filter(Custom_Variable_Daily_Entry.variable_info==item.variable_id).all()
-        print records
-        print type(records) 
-        print len(records)
         if len(records) < 2:
             print "\n None \n"
             break
@@ -516,13 +525,8 @@ def change_records():
 
     entry_number = int(entry_number) - 1
     all_info = Daily_Input.query.filter(Daily_Input.user_id==current_user).order_by(Daily_Input.date.desc()).all()
-    for i in range(len(all_info)):
-        print i 
-        print all_info[i]
     entry_to_change = all_info[entry_number]
-    print entry_to_change
     custom_v_entry = Custom_Variable_Daily_Entry.query.filter(Custom_Variable_Daily_Entry.daily_default_v_input_id==entry_to_change.input_id).all()
-    print custom_v_entry
     for i in custom_v_entry:
         print i 
         db.session.delete(i)
@@ -661,7 +665,13 @@ def add_new_variable():
     variable_name = request.form.get('variable_name')
     variable_name = str(variable_name)
     variable_name = variable_name.rstrip()
+    variable_name = variable_name.replace('/', '')
+    variable_name = variable_name.replace(';', '')        
     unit_type = request.form.get('unit_type')
+    for x in unit_type:
+        if not x.isalpha():
+            variable_name = variable_name.replace(x, '')
+    print variable_name
     current_user = session['current_user']
     new_custom_variable = Custom_Variable_Info(user_id=current_user, variable_name=variable_name, variable_units=unit_type)
     db.session.add(new_custom_variable)
@@ -669,6 +679,32 @@ def add_new_variable():
 
     return redirect('/see_all_records')
 
+@app.route("/delete_custom_variable")
+def delete_custom_variable():
+    current_user = session['current_user']
+    user_create_variables = Custom_Variable_Info.query.filter(Custom_Variable_Info.user_id == current_user).all()
+    users_variables = []
+    for behavior in user_create_variables:
+        users_variables.append(behavior.variable_name)
+    return render_template('delete_custom_variable.html', users_variables=users_variables)
+
+@app.route("/delete_variable", methods=["POST"])
+def delete_variable():
+    current_user = session['current_user']
+    variable_name = request.form.get('variable_name')
+    email = session['current_user']
+    
+    variable_to_delete = Custom_Variable_Info.query.filter(Custom_Variable_Info.user_id == current_user, Custom_Variable_Info.variable_name == variable_name).one()
+    entries = Custom_Variable_Daily_Entry.query.filter(Custom_Variable_Daily_Entry.variable_info == variable_to_delete.variable_id).all()
+
+    for entry in entries:
+        db.session.delete(entry)
+    db.session.commit()
+
+    db.session.delete(variable_to_delete)
+    db.session.commit()
+
+    return redirect('/see_all_records')
 
 @app.route("/logout")
 def logout():
