@@ -2,32 +2,7 @@
 <head>
 <title></title>
 <style>
-/*.tooltip {
-    position: relative;
-    display: inline-block;
-    border-bottom: 1px dotted black;
-}
 
-.tooltip .tooltiptext {
-    visibility: hidden;
-    width: 500px;
-    background-color: pink;
-    color: #5f635c;
-    text-align: left;
-    padding: 5px 0;
-    
- /*    Position the tooltip */
-/*    position: absolute;
-    z-index: 1;
-    top: 200%;
-    left: 50%;
-    margin-left: -20px;
-}
-
-.tooltip:hover .tooltiptext {
-    visibility: visible;
-    opacity: 1;
-}*/
 
 
 </style>
@@ -72,18 +47,28 @@
                     <br><br> 
                 {% if size > 0 %}
                     {% for i in custom_variables.keys() %}
-                        {% if custom_variables[i]["unit"] != "Yes/No" %}
+                        {% if custom_variables[i]["unit"] != "B" %}
                             How much {{ custom_variables[i]["name"]}} did you get yesterday?
                         {% else %}     
                             Did you {{ custom_variables[i]["name"]}} yesterday?
                         {% endif %}    
-                        <input type='float' name="{{custom_variables[i]["name"]}}" style="width: 34px;" required> {{ custom_variables[i]["unit"]}}<br><br>
+                        <input type='float' name="{{custom_variables[i]["name"]}}" style="width: 34px;" required> 
+                        {% if custom_variables[i]["unit"] != "B" %}    
+                            {{ custom_variables[i]["unit"]}}<br><br>
+                        {% else %}
+                            <br><br>    
+                        {% endif %}    
                     {% endfor %}   
                 {% endif %}
             Rate your sense of well-being yesterday on a scale from 1-5
             <input type="number" name="wellness_score" min="1" min="5" style="width: 34px;">
-            <text id="quantify_info" title="5) euphoric; exalted; deeply contented 4) generally pleased; good amount of energy; feeling capable 3) feeling fine; average 2) feeling down; lower energy than usual 1) depressed; common tasks seem insurmountable; unable to experience pleasure.">need help quantifying your sense of wellness?</text>
-            <br><br>
+            <text id="score_help">need help quantifying your sense of wellness?</text>
+            <br>
+            <div class="col-xs-9 col-md-4 col-lg-4"> 
+            <text id="quantify_info"> euphoric; exalted; deeply contented 4) generally pleased; good amount of energy; feeling capable 3) feeling fine; average 2) feeling down; lower energy than usual 1) depressed; common tasks seem insurmountable; unable to experience pleasure.</text>
+            </div>
+            </div>
+            <div class="row" style="margin-top: 5vh">   
             Submit data for yesterday: 
                 <select name="date">
                     <option value="" id="choose_date"></option>
@@ -94,10 +79,30 @@
     </div>        
 </div>
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script>
 
-$(document).ready(function(){
-    $("#quantify_info").tooltip({placement: "bottom"}); 
+$("#quantify_info").hide();
+
+
+$("#score_help").on('mouseover', function(){
+  $("#quantify_info").fadeIn();
+  $("#score_help").toggle();
+});
+
+$("#quantify_info").on('mouseleave', function(){
+  $("#quantify_info").toggle();
+  $("#score_help").toggle();
+});
+// click for people using their phones 
+$("#score_help").on('click', function(){
+  $("#quantify_info").toggle();
+  $("#score_help").toggle();
+});
+
+$("#quantify_info").on('click', function(){
+  $("#quantify_info").toggle();
+  $("#score_help").toggle();
 });
 
 

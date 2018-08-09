@@ -91,9 +91,14 @@ def confirm_registration():
     user = User.query.filter(User.ID == user_email).one()
     print user 
     name = user.name
-    password = user.password    
+    password = user.password
+    first_entry = user.first_entry_at
+    if not first_entry:
+        first_entry = Daily_Input.query.filter(Daily_Input.user_id == user_email).order_by('date').first()
 
-    return render_template("registration_confirmation.html", name=name, password=password)
+    first_entry = first_entry.strftime('%B %d, %Y')       
+
+    return render_template("registration_confirmation.html", name=name, first_entry=first_entry)
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -668,12 +673,18 @@ def add_new_variable():
     variable_name = variable_name.replace('/', '')
     variable_name = variable_name.replace(';', '')        
     unit_type = request.form.get('unit_type')
-    for x in unit_type:
-        if not x.isalpha():
-            variable_name = variable_name.replace(x, '')
-    print variable_name
+    if unit_type:
+        unit_type = str(unit_type)
+        unit_type = unit_type.replace('/', '')
+        unit_type = unit_type.replace(';', '')
+    else:
+        unit_type = "B"    
+
     current_user = session['current_user']
+
     new_custom_variable = Custom_Variable_Info(user_id=current_user, variable_name=variable_name, variable_units=unit_type)
+
+            
     db.session.add(new_custom_variable)
     db.session.commit()
 

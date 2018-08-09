@@ -6,19 +6,16 @@
         <div class="col-xs-9 col-md-6 col-lg-6" style="border-style: solid; border-width: 1px; border-radius: 5px; border-color: gray; padding: 18px;">
             Welcome, {{ name }}!<br>
             We have your email as {{ session['current_user']}}<br>
-            Would you like to see the password you set?<br><p id = "password"> </p>
-            <button type = "button" id = "pass_ask" style="background-color: white;">show password</button>
+            {% if first_entry %}
+                You have been tracking since {{ first_entry }}
+            {% endif %}    
         </div>
     </div>
 </div>        
 <script src="https://code.jQuery.com/jQuery-3.2.1.min.js"></script>
 <script>
 
-let password = {{ password|tojson|safe }};
 
-$("#pass_ask").on("click", function(){
-    $("#password").html(password);
-})
 </script>
 {% endblock %}
 </body>

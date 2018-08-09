@@ -9,14 +9,15 @@
 
    <div class="row" style="margin-top: 15vh;">
     <h1>make your own variable</h1>
-      <div class="col-xs-9 col-md-3 col-lg-3">  
+    <h4>what behavior would you like to start tracking?</h4>
+      <div class="col-xs-4 col-md-3 col-lg-3">  
         
 
         <form action="/add_new_variable" method="POST">
-        Variable Name:<input type="text" name="variable_name" id="custom_variable" style="outline: none;"></input>
+        Variable Name:  <input type="text" name="variable_name" id="custom_variable" style="outline: none;"></input>
       </div>
       <div class="col-xs-9 col-md-4 col-lg-4">    
-        Variable Unit of Measurement: <input type="text" name="unit_type" id="unit_type" style="outline: none;"required></input>
+        Variable Unit of Measurement: <input type="text" name="unit_type" id="unit_type" style="outline: none;"></input>
 
          
       </div>
@@ -28,7 +29,7 @@
     <text id="countdown_feedback"></text>
     </div>
     <div class="col-xs-9 col-md-4 col-lg-4"> 
-    <text id="unit_feedback" style="line-height: 1.7;">if you just want to record weather or not you did something, call the unit 'y/n', for yes/no, and we will store it as a boolean type. </text><text id="more_help" style="line-height: 1.7;">For custom variables, try to choose behaviors that you do regularly or want to do regularly, rather than activities which you only do intermittently (for example, it would be better to track how often you walk dogs at your local shelter rather than how often you donate blood, since you can only donate blood once every two months). Additionally, when naming your variables, try to stick to verbs (for example "run" instead of "miles ran").</text><br><a id="get_tips" style="cursor: help;">more helpful tips</a></text><br><text id="less" style="cursor: pointer; color: pink;">less</text>
+    <text id="unit_feedback" style="line-height: 1.7;">if you just want to record weather or not you did something, leave the field for units of measurement empty. </text><text id="more_help" style="line-height: 1.7;">For custom variables, try to choose behaviors that you do regularly or want to do regularly, rather than activities which you only do intermittently, sporadically, or by chance. Additionally, when naming your variables, try to stick to present-tense verbs (for example "run" instead of "miles ran").</text><br><a id="get_tips" style="cursor: help;">more</a></text><br><text id="less" style="cursor: pointer; color: pink;">less</text>
   </div>
   </div>
   <div class="row" style="margin-top: 25vh">
@@ -47,7 +48,7 @@ $("#less").hide();
 
 $("#custom_variable").keyup(function(){
   $("#unit_feedback").hide();
-  $("#countdown_feedback").text("Characters left: " + (29 - $(this).val().length));
+  $("#countdown_feedback").text("characters left: " + (29 - $(this).val().length));
 });
 
 
