@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+<head>
+
+<title></title>
+</head>
+<body>
+{% block content %}    
+<div class="container">
+    <div class="row">
+        <h2>Select the variable you would like to delete</h2>
+    </div>
+    <div class="row">    
+        <form action="/delete_variable" method="POST">
+            {% for item in users_variables %}
+                <input type="radio" name="variable_name" value="{{item}}" checked> {{item}} <br>
+            {% endfor %}
+            <br>
+            <input type="submit" value="Submit">
+        </form>
+    </div>            
+</div>
+{% endblock %}
+</body>
+
+</html>       
