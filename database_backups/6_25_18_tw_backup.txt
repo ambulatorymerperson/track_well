@@ -1,0 +1,488 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 10.3
+-- Dumped by pg_dump version 10.3
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: custom_variable_dailies; Type: TABLE; Schema: public; Owner: isabellaapplen
+--
+
+CREATE TABLE public.custom_variable_dailies (
+    input_id integer NOT NULL,
+    variable_info integer NOT NULL,
+    daily_default_v_input_id integer NOT NULL,
+    custom_variable_amount double precision
+);
+
+
+ALTER TABLE public.custom_variable_dailies OWNER TO isabellaapplen;
+
+--
+-- Name: custom_variable_dailies_input_id_seq; Type: SEQUENCE; Schema: public; Owner: isabellaapplen
+--
+
+CREATE SEQUENCE public.custom_variable_dailies_input_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.custom_variable_dailies_input_id_seq OWNER TO isabellaapplen;
+
+--
+-- Name: custom_variable_dailies_input_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: isabellaapplen
+--
+
+ALTER SEQUENCE public.custom_variable_dailies_input_id_seq OWNED BY public.custom_variable_dailies.input_id;
+
+
+--
+-- Name: custom_variable_info; Type: TABLE; Schema: public; Owner: isabellaapplen
+--
+
+CREATE TABLE public.custom_variable_info (
+    variable_id integer NOT NULL,
+    user_id character varying(30) NOT NULL,
+    variable_name character varying(30) NOT NULL,
+    variable_units character varying(10) NOT NULL
+);
+
+
+ALTER TABLE public.custom_variable_info OWNER TO isabellaapplen;
+
+--
+-- Name: custom_variable_info_variable_id_seq; Type: SEQUENCE; Schema: public; Owner: isabellaapplen
+--
+
+CREATE SEQUENCE public.custom_variable_info_variable_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.custom_variable_info_variable_id_seq OWNER TO isabellaapplen;
+
+--
+-- Name: custom_variable_info_variable_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: isabellaapplen
+--
+
+ALTER SEQUENCE public.custom_variable_info_variable_id_seq OWNED BY public.custom_variable_info.variable_id;
+
+
+--
+-- Name: daily_inputs; Type: TABLE; Schema: public; Owner: isabellaapplen
+--
+
+CREATE TABLE public.daily_inputs (
+    input_id integer NOT NULL,
+    date timestamp without time zone NOT NULL,
+    user_id character varying(30) NOT NULL,
+    sleep double precision NOT NULL,
+    exercise double precision NOT NULL,
+    screen_time double precision NOT NULL,
+    well_being_rating integer NOT NULL
+);
+
+
+ALTER TABLE public.daily_inputs OWNER TO isabellaapplen;
+
+--
+-- Name: daily_inputs_input_id_seq; Type: SEQUENCE; Schema: public; Owner: isabellaapplen
+--
+
+CREATE SEQUENCE public.daily_inputs_input_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.daily_inputs_input_id_seq OWNER TO isabellaapplen;
+
+--
+-- Name: daily_inputs_input_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: isabellaapplen
+--
+
+ALTER SEQUENCE public.daily_inputs_input_id_seq OWNED BY public.daily_inputs.input_id;
+
+
+--
+-- Name: users; Type: TABLE; Schema: public; Owner: isabellaapplen
+--
+
+CREATE TABLE public.users (
+    "ID" character varying(30) NOT NULL,
+    password character varying(15) NOT NULL,
+    name character varying(15) NOT NULL,
+    first_entry_at timestamp without time zone
+);
+
+
+ALTER TABLE public.users OWNER TO isabellaapplen;
+
+--
+-- Name: custom_variable_dailies input_id; Type: DEFAULT; Schema: public; Owner: isabellaapplen
+--
+
+ALTER TABLE ONLY public.custom_variable_dailies ALTER COLUMN input_id SET DEFAULT nextval('public.custom_variable_dailies_input_id_seq'::regclass);
+
+
+--
+-- Name: custom_variable_info variable_id; Type: DEFAULT; Schema: public; Owner: isabellaapplen
+--
+
+ALTER TABLE ONLY public.custom_variable_info ALTER COLUMN variable_id SET DEFAULT nextval('public.custom_variable_info_variable_id_seq'::regclass);
+
+
+--
+-- Name: daily_inputs input_id; Type: DEFAULT; Schema: public; Owner: isabellaapplen
+--
+
+ALTER TABLE ONLY public.daily_inputs ALTER COLUMN input_id SET DEFAULT nextval('public.daily_inputs_input_id_seq'::regclass);
+
+
+--
+-- Data for Name: custom_variable_dailies; Type: TABLE DATA; Schema: public; Owner: isabellaapplen
+--
+
+COPY public.custom_variable_dailies (input_id, variable_info, daily_default_v_input_id, custom_variable_amount) FROM stdin;
+3	5	74	100
+4	3	74	20
+5	2	75	17
+6	1	75	1
+7	2	76	8.5
+8	1	76	5.70000000000000018
+9	2	77	13.3000000000000007
+10	1	77	19
+11	2	78	0
+12	1	78	0
+13	2	79	0
+14	1	79	0
+15	6	81	65
+16	6	82	72
+17	6	83	19
+18	6	84	89
+19	5	85	70
+20	3	85	83
+21	5	86	80
+22	3	86	92
+23	5	87	90
+24	3	87	20
+25	5	88	34
+26	3	88	44
+27	2	89	0
+28	1	89	0
+35	6	93	35
+45	10	98	0.650000000000000022
+46	2	98	0
+47	1	98	0
+48	10	99	2.20000000000000018
+49	2	99	0
+50	1	99	0
+51	10	100	2.5
+52	2	100	0
+53	1	100	0
+54	12	101	70
+55	10	101	1
+56	11	101	1250
+57	2	101	19
+58	1	101	11
+59	12	102	0
+60	10	102	3.89999999999999991
+61	11	102	0
+62	2	102	0
+63	1	102	0
+64	5	103	20
+65	3	103	34
+71	12	105	0
+72	10	105	3.60000000000000009
+73	11	105	0
+74	2	105	0
+75	1	105	0
+81	12	107	0
+82	10	107	4.40000000000000036
+83	11	107	0
+84	2	107	0
+85	1	107	0
+91	12	109	0
+92	10	109	3.10000000000000009
+93	11	109	0
+94	2	109	0
+95	1	109	0
+101	12	111	0
+102	10	111	1.10000000000000009
+103	11	111	0
+104	2	111	10.5
+105	1	111	5
+106	12	112	0
+107	10	112	1.80000000000000004
+108	11	112	0
+109	2	112	0
+110	1	112	0
+111	12	113	85
+112	10	113	4.70000000000000018
+113	11	113	2705
+114	2	113	3
+115	1	113	15
+121	12	115	0
+122	10	115	2.79999999999999982
+123	11	115	0
+124	2	115	0
+125	1	115	0
+136	12	118	0
+137	10	118	5.20000000000000018
+138	11	118	0
+139	2	118	0
+140	1	118	0
+146	5	120	50
+147	3	120	24
+153	12	122	0
+154	10	122	3
+155	11	122	0
+156	2	122	22
+157	1	122	3
+158	12	123	0
+159	10	123	3
+160	11	123	0
+161	2	123	2
+162	1	123	12
+\.
+
+
+--
+-- Data for Name: custom_variable_info; Type: TABLE DATA; Schema: public; Owner: isabellaapplen
+--
+
+COPY public.custom_variable_info (variable_id, user_id, variable_name, variable_units) FROM stdin;
+1	isabellaapplen@gmail.com	70-80%maxbpm	minutes
+2	isabellaapplen@gmail.com	80-90%maxbpm	minutes
+3	user@inbox.com	sunlight	minutes
+5	user@inbox.com	caffeine consumption	mg
+6	jseclow@gmail.com	time reading	minutes
+7	jseclow@gmail.com	fasted	hours
+10	isabellaapplen@gmail.com	walked	miles
+11	isabellaapplen@gmail.com	total weight squatted	lbs
+12	isabellaapplen@gmail.com	maximum weight squatted	lbs
+\.
+
+
+--
+-- Data for Name: daily_inputs; Type: TABLE DATA; Schema: public; Owner: isabellaapplen
+--
+
+COPY public.daily_inputs (input_id, date, user_id, sleep, exercise, screen_time, well_being_rating) FROM stdin;
+1	2018-03-17 00:00:00	user@inbox.com	9	1	1	5
+2	2018-03-18 00:00:00	user@inbox.com	8.5	0.75	1.19999999999999996	4
+3	2018-03-19 00:00:00	user@inbox.com	10	1.5	2	4
+4	2018-03-20 00:00:00	user@inbox.com	5	0	3	2
+6	2018-03-21 00:00:00	user@inbox.com	9	1.5	0.75	5
+7	2018-03-22 00:00:00	user@inbox.com	4.5	0	3	1
+11	2018-05-15 00:00:00	isabellaapplen@gmail.com	8.33000000000000007	0.75	1.44999999999999996	5
+12	2018-05-16 00:00:00	isabellaapplen@gmail.com	7	0	1.5	3
+13	2018-05-17 00:00:00	isabellaapplen@gmail.com	6	0	1.03000000000000003	4
+15	2018-05-17 00:00:00	jseclow@gmail.com	7.5	0	2.5	2
+17	2018-05-18 00:00:00	isabellaapplen@gmail.com	9	0	2.70000000000000018	4
+18	2018-05-18 00:00:00	jseclow@gmail.com	9	0.25	1	4
+19	2018-05-19 00:00:00	isabellaapplen@gmail.com	8.33000000000000007	0	2.37000000000000011	3
+20	2018-05-19 00:00:00	jseclow@gmail.com	8	1	0.220000000000000001	5
+21	2018-05-20 00:00:00	isabellaapplen@gmail.com	8.5	0.330000000000000016	1.14999999999999991	2
+22	2018-05-20 00:00:00	jseclow@gmail.com	8	0.75	0.330000000000000016	4
+23	2018-05-21 00:00:00	isabellaapplen@gmail.com	8	0	1.78000000000000003	3
+24	2018-05-22 00:00:00	isabellaapplen@gmail.com	8	0	1.16999999999999993	2
+25	2018-05-22 00:00:00	jseclow@gmail.com	8	0	2	3
+26	2018-05-23 00:00:00	isabellaapplen@gmail.com	7.66999999999999993	0	0.900000000000000022	4
+27	2018-05-24 00:00:00	isabellaapplen@gmail.com	7	0.330000000000000016	1	4
+29	2018-05-25 00:00:00	isabellaapplen@gmail.com	8.16999999999999993	0	0.149999999999999994	3
+30	2018-05-28 00:00:00	isabellaapplen@gmail.com	10	0	0.220000000000000001	2
+31	2018-05-15 00:00:00	user@inbox.com	8.5	1.25	0.75	5
+34	2018-05-16 00:00:00	user@inbox.com	9	1	1.16999999999999993	4
+35	2018-05-01 00:00:00	user@inbox.com	8.5	0.75	0.5	4
+36	2018-05-30 00:00:00	user@inbox.com	6.5	0.25	1.5	3
+37	2018-05-30 00:00:00	isabellaapplen@gmail.com	9	0.0800000000000000017	0.599999999999999978	4
+39	2018-05-31 00:00:00	isabellaapplen@gmail.com	7	0	0.849999999999999978	4
+40	2018-05-14 00:00:00	isabellaapplen@gmail.com	7	0.170000000000000012	1.69999999999999996	3
+41	2018-05-29 00:00:00	isabellaapplen@gmail.com	8.5	0.25	1.66999999999999993	3
+51	2018-05-29 00:00:00	user@inbox.com	7.16999999999999993	0.299999999999999989	1	3
+53	2018-05-28 00:00:00	user@inbox.com	8	0.5	0.75	4
+57	2018-05-06 00:00:00	user@inbox.com	8.75	1	0.67000000000000004	4
+59	2018-05-07 00:00:00	user@inbox.com	6.33000000000000007	0.330000000000000016	1.16999999999999993	3
+61	2018-05-08 00:00:00	user@inbox.com	6.5	0.5	1.66999999999999993	3
+63	2018-05-09 00:00:00	user@inbox.com	7.5	0.82999999999999996	0.82999999999999996	4
+65	2018-05-10 00:00:00	user@inbox.com	7.75	0.92000000000000004	0.949999999999999956	4
+67	2018-05-11 00:00:00	user@inbox.com	9.16999999999999993	0.82999999999999996	0.92000000000000004	4
+74	2018-06-02 00:00:00	user@inbox.com	5.25	0	1.66999999999999993	2
+75	2018-06-04 00:00:00	isabellaapplen@gmail.com	8	0.419999999999999984	1.60000000000000009	3
+76	2018-06-03 00:00:00	isabellaapplen@gmail.com	10.5	0.419999999999999984	1.37000000000000011	3
+77	2018-06-02 00:00:00	isabellaapplen@gmail.com	9.5	0.75	1	4
+78	2018-06-05 00:00:00	isabellaapplen@gmail.com	9	0	0.419999999999999984	4
+79	2018-06-06 00:00:00	isabellaapplen@gmail.com	8	0	0.479999999999999982	2
+81	2018-06-07 00:00:00	jseclow@gmail.com	7.12000000000000011	0.25	0.75	3
+82	2018-05-30 00:00:00	jseclow@gmail.com	8.5	0.320000000000000007	2.14999999999999991	3
+83	2018-05-29 00:00:00	jseclow@gmail.com	8.66999999999999993	0	1.67999999999999994	2
+84	2018-05-24 00:00:00	jseclow@gmail.com	7.66999999999999993	0	0.569999999999999951	4
+85	2018-06-06 00:00:00	user@inbox.com	9	1	0.5	5
+86	2018-06-04 00:00:00	user@inbox.com	9	1	0.369999999999999996	3
+87	2018-06-03 00:00:00	user@inbox.com	9	1	1	3
+88	2018-06-01 00:00:00	user@inbox.com	5	0.220000000000000001	2	2
+89	2018-06-07 00:00:00	isabellaapplen@gmail.com	8.16999999999999993	0	0.450000000000000011	2
+93	2018-06-09 00:00:00	jseclow@gmail.com	8	0	0.419999999999999984	3
+98	2018-06-10 00:00:00	isabellaapplen@gmail.com	8.5	0	0.67000000000000004	3
+99	2018-06-09 00:00:00	isabellaapplen@gmail.com	8.5	0	0.67000000000000004	3
+100	2018-06-08 00:00:00	isabellaapplen@gmail.com	8.82000000000000028	0	0.369999999999999996	3
+101	2018-06-12 00:00:00	isabellaapplen@gmail.com	10.25	0.849999999999999978	2	3
+102	2018-06-11 00:00:00	isabellaapplen@gmail.com	8.5	0	0.67000000000000004	3
+103	2018-06-12 00:00:00	user@inbox.com	8.25	0.5	0.75	4
+105	2018-06-13 00:00:00	isabellaapplen@gmail.com	8.5	0	1.87999999999999989	3
+107	2018-06-14 00:00:00	isabellaapplen@gmail.com	8.5	0.23000000000000001	1.77000000000000002	3
+109	2018-06-15 00:00:00	isabellaapplen@gmail.com	8.33000000000000007	0	0.819999999999999951	3
+111	2018-06-16 00:00:00	isabellaapplen@gmail.com	8.5	0.369999999999999996	1.62000000000000011	2
+112	2018-06-17 00:00:00	isabellaapplen@gmail.com	10.5	0	1.42999999999999994	4
+113	2018-06-18 00:00:00	isabellaapplen@gmail.com	9	0.530000000000000027	1.25	4
+115	2018-06-19 00:00:00	isabellaapplen@gmail.com	8.5	0	0.849999999999999978	4
+118	2018-06-20 00:00:00	isabellaapplen@gmail.com	8.5	0	0.719999999999999973	4
+120	2018-06-21 00:00:00	user@inbox.com	9	2	1	4
+122	2018-06-23 00:00:00	isabellaapplen@gmail.com	9	0.67000000000000004	2.75	2
+123	2018-06-24 00:00:00	isabellaapplen@gmail.com	9	1	1	3
+\.
+
+
+--
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: isabellaapplen
+--
+
+COPY public.users ("ID", password, name, first_entry_at) FROM stdin;
+user@inbox.com	secretstring	Joe Doe	2018-03-17 00:00:00
+jseclow@gmail.com	secretstring	Jonathan	\N
+isabellaapplen@gmail.com	mustbeunder15ch	Isabella	\N
+email	123	Tanuki Tom	\N
+me@me.me	hi	Tanuki	\N
+\.
+
+
+--
+-- Name: custom_variable_dailies_input_id_seq; Type: SEQUENCE SET; Schema: public; Owner: isabellaapplen
+--
+
+SELECT pg_catalog.setval('public.custom_variable_dailies_input_id_seq', 162, true);
+
+
+--
+-- Name: custom_variable_info_variable_id_seq; Type: SEQUENCE SET; Schema: public; Owner: isabellaapplen
+--
+
+SELECT pg_catalog.setval('public.custom_variable_info_variable_id_seq', 12, true);
+
+
+--
+-- Name: daily_inputs_input_id_seq; Type: SEQUENCE SET; Schema: public; Owner: isabellaapplen
+--
+
+SELECT pg_catalog.setval('public.daily_inputs_input_id_seq', 123, true);
+
+
+--
+-- Name: custom_variable_dailies custom_variable_dailies_pkey; Type: CONSTRAINT; Schema: public; Owner: isabellaapplen
+--
+
+ALTER TABLE ONLY public.custom_variable_dailies
+    ADD CONSTRAINT custom_variable_dailies_pkey PRIMARY KEY (input_id);
+
+
+--
+-- Name: custom_variable_info custom_variable_info_pkey; Type: CONSTRAINT; Schema: public; Owner: isabellaapplen
+--
+
+ALTER TABLE ONLY public.custom_variable_info
+    ADD CONSTRAINT custom_variable_info_pkey PRIMARY KEY (variable_id);
+
+
+--
+-- Name: daily_inputs daily_inputs_pkey; Type: CONSTRAINT; Schema: public; Owner: isabellaapplen
+--
+
+ALTER TABLE ONLY public.daily_inputs
+    ADD CONSTRAINT daily_inputs_pkey PRIMARY KEY (input_id);
+
+
+--
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: isabellaapplen
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY ("ID");
+
+
+--
+-- Name: custom_variable_dailies custom_variable_dailies_daily_default_v_input_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: isabellaapplen
+--
+
+ALTER TABLE ONLY public.custom_variable_dailies
+    ADD CONSTRAINT custom_variable_dailies_daily_default_v_input_id_fkey FOREIGN KEY (daily_default_v_input_id) REFERENCES public.daily_inputs(input_id);
+
+
+--
+-- Name: custom_variable_dailies custom_variable_dailies_variable_info_fkey; Type: FK CONSTRAINT; Schema: public; Owner: isabellaapplen
+--
+
+ALTER TABLE ONLY public.custom_variable_dailies
+    ADD CONSTRAINT custom_variable_dailies_variable_info_fkey FOREIGN KEY (variable_info) REFERENCES public.custom_variable_info(variable_id);
+
+
+--
+-- Name: custom_variable_info custom_variable_info_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: isabellaapplen
+--
+
+ALTER TABLE ONLY public.custom_variable_info
+    ADD CONSTRAINT custom_variable_info_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users("ID");
+
+
+--
+-- Name: daily_inputs daily_inputs_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: isabellaapplen
+--
+
+ALTER TABLE ONLY public.daily_inputs
+    ADD CONSTRAINT daily_inputs_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users("ID");
+
+
+--
+-- PostgreSQL database dump complete
+--
+

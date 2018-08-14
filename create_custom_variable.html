@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+<head>
+<title></title>
+</head>
+<body>
+{% block content %}    
+
+<h1>Create an annoying variable</h1>
+
+<form action="//add_new_variable" method="POST">
+    Variable Name:<input type="text" id="custom variable"></input>
+    Variable Unit of Measurement:<select name="unit_type" id="unit_type">
+        <option value="hours">hours</option>
+        <option value="minutes">minutes</option>
+        <option value="mg">mg</option>
+        <option value="oz">oz</option>
+        <option value="cups">cups</option>
+        <option value="bool">Yes/No</option>
+    </select>
+</form>    
+
+
+
+</body>
+</html>   
